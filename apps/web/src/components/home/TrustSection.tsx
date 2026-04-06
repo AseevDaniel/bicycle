@@ -48,9 +48,9 @@ const partners = [
 
 export function TrustSection() {
   return (
-    <section className="py-24 bg-white relative overflow-hidden">
+    <section className="py-24 bg-white dark:bg-secondary-800 relative overflow-hidden">
       {/* Subtle background pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(26,26,46,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(26,26,46,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(26,26,46,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(26,26,46,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
@@ -60,13 +60,13 @@ export function TrustSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="text-primary-500 text-sm font-semibold uppercase tracking-widest">
+          <span className="text-primary-500 dark:text-primary-400 text-sm font-semibold uppercase tracking-widest">
             Why Choose Us
           </span>
-          <h2 className="text-4xl sm:text-5xl font-bold text-secondary-500 mt-3 mb-4">
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
             Built on Trust
           </h2>
-          <p className="text-secondary-500/60 text-lg max-w-xl mx-auto">
+          <p className="text-gray-500 dark:text-white/50 text-lg max-w-xl mx-auto">
             BiciMarket is the safest way to buy, sell, and rent bikes in Costa del Sol.
           </p>
         </motion.div>
@@ -80,11 +80,11 @@ export function TrustSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className={`border rounded-2xl p-7 ${item.bg} hover:scale-105 transition-transform duration-300`}
+              className={`border rounded-2xl p-7 ${item.bg} hover:scale-105 transition-transform duration-300 dark:border-opacity-30`}
             >
               <div className="text-4xl mb-5">{item.icon}</div>
               <h3 className={`text-xl font-bold mb-3 ${item.color}`}>{item.title}</h3>
-              <p className="text-secondary-500/70 text-sm leading-relaxed">
+              <p className="text-gray-600 dark:text-white/60 text-sm leading-relaxed">
                 {item.title === 'Verified Sellers'
                   ? 'Every seller goes through our ID verification process. Buy with confidence knowing you\'re dealing with real people.'
                   : item.title === 'Honest Reviews'
@@ -109,7 +109,7 @@ export function TrustSection() {
               <span key={i} className="text-yellow-400 text-xl">⭐</span>
             ))}
           </div>
-          <blockquote className="text-2xl font-medium text-secondary-500/80 italic leading-relaxed mb-6">
+          <blockquote className="text-2xl font-medium text-gray-600 dark:text-white/70 italic leading-relaxed mb-6">
             &quot;Sold my Trek in 2 days and bought a gravel bike the same week. The escrow system gave me total peace of mind. Best cycling marketplace on the Costa del Sol!&quot;
           </blockquote>
           <div className="flex items-center justify-center gap-3">
@@ -117,8 +117,8 @@ export function TrustSection() {
               M
             </div>
             <div className="text-left">
-              <div className="font-bold text-secondary-500">Marcus Weber</div>
-              <div className="text-secondary-500/50 text-sm">Marbella • Verified Buyer & Seller</div>
+              <div className="font-bold text-gray-900 dark:text-white">Marcus Weber</div>
+              <div className="text-gray-400 dark:text-white/40 text-sm">Marbella • Verified Buyer & Seller</div>
             </div>
           </div>
         </motion.div>
@@ -128,9 +128,9 @@ export function TrustSection() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="border-t border-secondary-200 pt-12"
+          className="border-t border-gray-200 dark:border-white/10 pt-12"
         >
-          <p className="text-center text-secondary-500/40 text-sm uppercase tracking-widest mb-8">
+          <p className="text-center text-gray-400 dark:text-white/30 text-sm uppercase tracking-widest mb-8">
             Popular brands in our marketplace
           </p>
           <div className="flex flex-wrap justify-center gap-8">
@@ -142,7 +142,7 @@ export function TrustSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05 }}
-                  className="text-secondary-500/30 font-bold text-lg hover:text-secondary-500/60 transition-colors cursor-default"
+                  className="text-gray-300 dark:text-white/20 font-bold text-lg hover:text-gray-500 dark:hover:text-white/50 transition-colors cursor-default"
                 >
                   {brand}
                 </motion.span>

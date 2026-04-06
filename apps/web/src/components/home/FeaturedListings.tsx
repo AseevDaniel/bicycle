@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ListingCard, ListingCardProps } from '@/components/ui/ListingCard'
 import { ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { useLocale } from 'next-intl'
 
 const MOCK_LISTINGS: ListingCardProps[] = [
   {
@@ -94,15 +96,15 @@ const MOCK_LISTINGS: ListingCardProps[] = [
 
 function SkeletonCard() {
   return (
-    <div className="bg-secondary-500/40 border border-white/10 rounded-2xl overflow-hidden animate-pulse">
-      <div className="h-52 bg-white/5" />
+    <div className="bg-gray-100 dark:bg-secondary-500/40 border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden animate-pulse">
+      <div className="h-52 bg-gray-200 dark:bg-white/5" />
       <div className="p-4 space-y-3">
-        <div className="h-5 bg-white/5 rounded-lg w-3/4" />
-        <div className="h-4 bg-white/5 rounded-lg w-1/2" />
-        <div className="h-4 bg-white/5 rounded-lg w-1/3" />
+        <div className="h-5 bg-gray-200 dark:bg-white/5 rounded-lg w-3/4" />
+        <div className="h-4 bg-gray-200 dark:bg-white/5 rounded-lg w-1/2" />
+        <div className="h-4 bg-gray-200 dark:bg-white/5 rounded-lg w-1/3" />
         <div className="flex justify-between items-center pt-2">
-          <div className="h-8 bg-white/5 rounded-lg w-24" />
-          <div className="h-9 bg-white/5 rounded-xl w-20" />
+          <div className="h-8 bg-gray-200 dark:bg-white/5 rounded-lg w-24" />
+          <div className="h-9 bg-gray-200 dark:bg-white/5 rounded-xl w-20" />
         </div>
       </div>
     </div>
@@ -112,6 +114,7 @@ function SkeletonCard() {
 export function FeaturedListings() {
   const [listings, setListings] = useState<ListingCardProps[]>([])
   const [loading, setLoading] = useState(true)
+  const locale = useLocale()
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -132,7 +135,7 @@ export function FeaturedListings() {
   }, [])
 
   return (
-    <section className="py-20 bg-gradient-to-b from-secondary-900 to-secondary-800">
+    <section className="py-20 bg-gray-50 dark:bg-secondary-900">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -142,23 +145,23 @@ export function FeaturedListings() {
           className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12"
         >
           <div>
-            <span className="text-primary-400 text-sm font-semibold uppercase tracking-widest">
+            <span className="text-primary-500 dark:text-primary-400 text-sm font-semibold uppercase tracking-widest">
               Hand-picked
             </span>
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mt-2">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mt-2">
               Featured Listings
             </h2>
-            <p className="text-white/50 mt-2 text-lg">
+            <p className="text-gray-500 dark:text-white/50 mt-2 text-lg">
               Premium bikes from verified sellers across Costa del Sol
             </p>
           </div>
-          <a
-            href="/listings?featured=true"
-            className="inline-flex items-center gap-2 text-primary-400 hover:text-primary-300 font-semibold transition-colors group whitespace-nowrap"
+          <Link
+            href={`/${locale}/listings?featured=true`}
+            className="inline-flex items-center gap-2 text-primary-500 dark:text-primary-400 hover:text-primary-600 dark:hover:text-primary-300 font-semibold transition-colors group whitespace-nowrap"
           >
             View All
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </a>
+          </Link>
         </motion.div>
 
         {/* Grid */}

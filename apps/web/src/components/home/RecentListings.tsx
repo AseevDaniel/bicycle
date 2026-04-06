@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ListingCard, ListingCardProps } from '@/components/ui/ListingCard'
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { useLocale } from 'next-intl'
 
 const MOCK_RECENT: ListingCardProps[] = [
   {
@@ -117,6 +119,7 @@ const MOCK_RECENT: ListingCardProps[] = [
 export function RecentListings() {
   const [listings] = useState<ListingCardProps[]>(MOCK_RECENT)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const locale = useLocale()
 
   const scroll = (direction: 'left' | 'right') => {
     if (!scrollRef.current) return
@@ -128,7 +131,7 @@ export function RecentListings() {
   }
 
   return (
-    <section className="py-20 bg-secondary-800 overflow-hidden">
+    <section className="py-20 bg-white dark:bg-secondary-800 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -138,34 +141,34 @@ export function RecentListings() {
           className="flex items-end justify-between mb-10"
         >
           <div>
-            <span className="text-accent-400 text-sm font-semibold uppercase tracking-widest">
+            <span className="text-accent-500 dark:text-accent-400 text-sm font-semibold uppercase tracking-widest">
               Just Listed
             </span>
-            <h2 className="text-4xl font-bold text-white mt-2">Recent Listings</h2>
-            <p className="text-white/50 mt-1">Fresh bikes just added to the marketplace</p>
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mt-2">Recent Listings</h2>
+            <p className="text-gray-500 dark:text-white/50 mt-1">Fresh bikes just added to the marketplace</p>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={() => scroll('left')}
-              className="w-10 h-10 rounded-full border border-white/20 hover:border-white/50 text-white/60 hover:text-white flex items-center justify-center transition-all duration-200 hover:bg-white/10"
+              className="w-10 h-10 rounded-full border border-gray-200 dark:border-white/20 hover:border-gray-400 dark:hover:border-white/50 text-gray-500 dark:text-white/60 hover:text-gray-800 dark:hover:text-white flex items-center justify-center transition-all duration-200 hover:bg-gray-100 dark:hover:bg-white/10"
               aria-label="Scroll left"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={() => scroll('right')}
-              className="w-10 h-10 rounded-full border border-white/20 hover:border-white/50 text-white/60 hover:text-white flex items-center justify-center transition-all duration-200 hover:bg-white/10"
+              className="w-10 h-10 rounded-full border border-gray-200 dark:border-white/20 hover:border-gray-400 dark:hover:border-white/50 text-gray-500 dark:text-white/60 hover:text-gray-800 dark:hover:text-white flex items-center justify-center transition-all duration-200 hover:bg-gray-100 dark:hover:bg-white/10"
               aria-label="Scroll right"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
-            <a
-              href="/listings?sort=newest"
-              className="hidden sm:flex items-center gap-2 text-accent-400 hover:text-accent-300 font-semibold transition-colors group"
+            <Link
+              href={`/${locale}/listings?sort=newest`}
+              className="hidden sm:flex items-center gap-2 text-accent-500 dark:text-accent-400 hover:text-accent-600 dark:hover:text-accent-300 font-semibold transition-colors group"
             >
               See All <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </a>
+            </Link>
           </div>
         </motion.div>
 
@@ -190,16 +193,16 @@ export function RecentListings() {
 
           {/* See more card */}
           <div className="flex-shrink-0 w-72 snap-start">
-            <a
-              href="/listings?sort=newest"
-              className="flex flex-col items-center justify-center h-full min-h-[320px] bg-white/5 border border-white/10 rounded-2xl hover:border-primary-500/40 hover:bg-primary-500/5 transition-all duration-300 group p-8 text-center"
+            <Link
+              href={`/${locale}/listings?sort=newest`}
+              className="flex flex-col items-center justify-center h-full min-h-[320px] bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl hover:border-primary-400 dark:hover:border-primary-500/40 hover:bg-primary-50 dark:hover:bg-primary-500/5 transition-all duration-300 group p-8 text-center"
             >
-              <div className="w-16 h-16 rounded-full bg-primary-500/20 flex items-center justify-center mb-4 group-hover:bg-primary-500/30 transition-colors">
-                <ArrowRight className="w-8 h-8 text-primary-400 group-hover:translate-x-1 transition-transform" />
+              <div className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-500/20 flex items-center justify-center mb-4 group-hover:bg-primary-200 dark:group-hover:bg-primary-500/30 transition-colors">
+                <ArrowRight className="w-8 h-8 text-primary-500 dark:text-primary-400 group-hover:translate-x-1 transition-transform" />
               </div>
-              <p className="text-white font-bold text-lg">View All Recent</p>
-              <p className="text-white/40 text-sm mt-1">847 bikes available</p>
-            </a>
+              <p className="text-gray-900 dark:text-white font-bold text-lg">View All Recent</p>
+              <p className="text-gray-400 dark:text-white/40 text-sm mt-1">847 bikes available</p>
+            </Link>
           </div>
         </div>
       </div>
