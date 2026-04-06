@@ -124,6 +124,24 @@ function BikeModelCanvas() {
       }
     )
 
+    // Mouse parallax state
+    let targetRotY = 0.15   // initial slight angle
+    let targetRotX = 0.05
+    let currentRotY = 0.15
+    let currentRotX = 0.05
+    let lastMouseTime = 0
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Normalize to -0.5…+0.5 across full window
+      const nx = (e.clientX / window.innerWidth) - 0.5
+      const ny = (e.clientY / window.innerHeight) - 0.5
+      // Mouse left → show more right side; mouse right → show more left side
+      targetRotY = -nx * 0.9   // ±0.45 rad horizontal
+      targetRotX =  ny * 0.25  // ±0.125 rad vertical tilt
+      lastMouseTime = Date.now()
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+
     // Animation loop
     let animId: number
     let t = 0
@@ -135,11 +153,21 @@ function BikeModelCanvas() {
       loadingRing.rotation.z += 0.05
       loadingRing.rotation.x = Math.PI / 4
 
-      // Slow model rotation — full turn every ~40 seconds
-      modelGroup.rotation.y = t * 0.025
+      // Idle rocking when mouse hasn't moved for 2 s
+      if (Date.now() - lastMouseTime > 2000) {
+        targetRotY = Math.sin(t * 0.25) * 0.18
+        targetRotX = Math.sin(t * 0.18) * 0.06
+      }
 
-      // Very subtle floating
-      modelGroup.position.y = Math.sin(t * 0.4) * 0.08
+      // Spring lerp — smooth spring-like catch-up
+      currentRotY += (targetRotY - currentRotY) * 0.04
+      currentRotX += (targetRotX - currentRotX) * 0.04
+
+      modelGroup.rotation.y = currentRotY
+      modelGroup.rotation.x = currentRotX
+
+      // Subtle float
+      modelGroup.position.y = Math.sin(t * 0.4) * 0.07
 
       renderer.render(scene, camera)
     }
@@ -159,6 +187,7 @@ function BikeModelCanvas() {
     return () => {
       cancelAnimationFrame(animId)
       window.removeEventListener('resize', handleResize)
+      window.removeEventListener('mousemove', handleMouseMove)
       renderer.dispose()
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement)
     }
