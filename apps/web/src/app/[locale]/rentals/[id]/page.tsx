@@ -268,6 +268,10 @@ const RULES = [
   'Late returns incur an additional charge of 50% of daily rate per hour',
 ]
 
+export function generateStaticParams() {
+  return ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8'].map((id) => ({ id }))
+}
+
 export default function RentalDetailPage() {
   const params = useParams()
   const id = params.id as string

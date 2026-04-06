@@ -271,6 +271,10 @@ const conditionStyles: Record<string, string> = {
   D: 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400',
 }
 
+export function generateStaticParams() {
+  return ['1', '2', '3', '4', '5', '6', '9', '17'].map((id) => ({ id }))
+}
+
 export default function ListingDetailPage() {
   const params = useParams()
   const id = params.id as string
