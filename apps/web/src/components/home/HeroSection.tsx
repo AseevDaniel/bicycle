@@ -7,6 +7,8 @@ import { Torus, Box, Sphere, Cylinder, Float, Stars } from '@react-three/drei'
 import { motion } from 'framer-motion'
 import * as THREE from 'three'
 import { ChevronDown, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { useLocale } from 'next-intl'
 
 function BikeModel() {
   const groupRef = useRef<THREE.Group>(null)
@@ -147,13 +149,15 @@ const stats = [
 ]
 
 export function HeroSection() {
+  const locale = useLocale()
+
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-secondary-500">
       {/* 3D Canvas Background */}
       <div className="absolute inset-0 z-0">
         <HeroCanvas />
-        {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-secondary-900/90 via-secondary-900/60 to-secondary-900/20" />
+        {/* Dark overlay for text readability - reduced opacity to show 3D bike more */}
+        <div className="absolute inset-0 bg-gradient-to-r from-secondary-900/75 via-secondary-900/40 to-secondary-900/20" />
         <div className="absolute inset-0 bg-gradient-to-t from-secondary-900/80 via-transparent to-secondary-900/40" />
       </div>
 
@@ -211,25 +215,25 @@ export function HeroSection() {
             transition={{ duration: 0.7, delay: 0.5 }}
             className="flex flex-wrap gap-4 mb-16"
           >
-            <a
-              href="/listings"
+            <Link
+              href={`/${locale}/listings`}
               className="group flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white font-bold px-8 py-4 rounded-2xl text-lg transition-all duration-200 shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 hover:scale-105"
             >
               Browse Bikes
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </a>
-            <a
-              href="/sell"
+            </Link>
+            <Link
+              href={`/${locale}/sell`}
               className="flex items-center gap-2 border-2 border-white/30 hover:border-white/60 text-white font-bold px-8 py-4 rounded-2xl text-lg transition-all duration-200 hover:bg-white/10 backdrop-blur-sm"
             >
               Sell Your Bike
-            </a>
-            <a
-              href="/rentals"
+            </Link>
+            <Link
+              href={`/${locale}/rentals`}
               className="flex items-center gap-2 text-accent-400 hover:text-accent-300 font-bold px-8 py-4 rounded-2xl text-lg transition-all duration-200 hover:bg-accent-400/10"
             >
               Rent a Bike →
-            </a>
+            </Link>
           </motion.div>
 
           {/* Stats bar */}

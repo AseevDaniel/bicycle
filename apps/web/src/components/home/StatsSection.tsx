@@ -77,12 +77,12 @@ function CountUp({ target, suffix, duration = 2000 }: { target: number; suffix: 
 
 export function StatsSection() {
   return (
-    <section className="py-24 bg-secondary-500 relative overflow-hidden">
+    <section className="py-24 bg-primary-500 dark:bg-secondary-500 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/5 rounded-full blur-3xl" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,77,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,77,0,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-white/5 dark:bg-primary-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/5 dark:bg-accent-500/5 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:60px_60px]" />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -92,7 +92,7 @@ export function StatsSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="text-primary-400 text-sm font-semibold uppercase tracking-widest">
+          <span className="text-white/70 text-sm font-semibold uppercase tracking-widest">
             By the Numbers
           </span>
           <h2 className="text-4xl sm:text-5xl font-bold text-white mt-3">
@@ -110,12 +110,12 @@ export function StatsSection() {
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="relative group"
             >
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 text-center hover:border-primary-500/40 transition-all duration-300 hover:bg-white/8">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 text-center hover:border-white/40 transition-all duration-300 hover:bg-white/15">
                 {/* Icon */}
                 <div className="text-4xl mb-4">{stat.icon}</div>
 
                 {/* Counter */}
-                <div className="text-5xl sm:text-6xl font-black text-primary-400 mb-2 leading-none">
+                <div className="text-5xl sm:text-6xl font-black text-white mb-2 leading-none">
                   <CountUp target={stat.value} suffix={stat.suffix} />
                 </div>
 
@@ -123,10 +123,10 @@ export function StatsSection() {
                 <div className="text-white font-bold text-lg mb-1">{stat.label}</div>
 
                 {/* Description */}
-                <div className="text-white/40 text-sm">{stat.description}</div>
+                <div className="text-white/60 text-sm">{stat.description}</div>
 
                 {/* Decorative line */}
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 group-hover:w-1/2 h-0.5 bg-gradient-to-r from-transparent via-primary-500 to-transparent transition-all duration-500 rounded-full" />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 group-hover:w-1/2 h-0.5 bg-gradient-to-r from-transparent via-white/50 to-transparent transition-all duration-500 rounded-full" />
               </div>
             </motion.div>
           ))}

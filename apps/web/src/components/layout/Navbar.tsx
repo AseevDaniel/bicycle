@@ -60,16 +60,12 @@ export function Navbar() {
 
   const switchLocale = (locale: string) => {
     setLangOpen(false)
-    // Replace locale prefix in pathname
-    const segments = pathname.split('/')
+    const segments = pathname.split('/').filter(Boolean)
     const knownLocales = LOCALES.map((l) => l.code)
-    if (knownLocales.includes(segments[1])) {
-      segments[1] = locale === 'en' ? '' : locale
-      const newPath = segments.filter((s, i) => i !== 0 || s === '').join('/') || '/'
-      router.push(newPath.replace(/^\/\//, '/') || `/${locale}`)
-    } else {
-      router.push(locale === 'en' ? pathname : `/${locale}${pathname}`)
-    }
+    // Remove current locale prefix if present
+    const pathWithoutLocale = knownLocales.includes(segments[0]) ? segments.slice(1) : segments
+    const newPath = `/${locale}${pathWithoutLocale.length > 0 ? '/' + pathWithoutLocale.join('/') : ''}`
+    router.push(newPath)
   }
 
   const navLinks = [
@@ -88,7 +84,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link
-            href={currentLocale === 'en' ? '/' : `/${currentLocale}`}
+            href={`/${currentLocale}`}
             className="flex items-center gap-2 group"
           >
             <div className="w-8 h-8 bg-gradient-orange rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
@@ -104,7 +100,7 @@ export function Navbar() {
             {navLinks.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
-                href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}${href}`}
+                href={`/${currentLocale}${href}`}
                 className={clsx(
                   'flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                   pathname.includes(href)
@@ -166,14 +162,14 @@ export function Navbar() {
               {isLoggedIn ? (
                 <>
                   <Link
-                    href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}/messages`}
+                    href={`/${currentLocale}/messages`}
                     className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-secondary-700 transition-colors"
                     aria-label={t('messages')}
                   >
                     <MessageSquare className="w-4 h-4" />
                   </Link>
                   <Link
-                    href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}/profile`}
+                    href={`/${currentLocale}/profile`}
                     className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-secondary-700 transition-colors"
                     aria-label={t('profile')}
                   >
@@ -183,14 +179,14 @@ export function Navbar() {
               ) : (
                 <>
                   <Link
-                    href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}/login`}
+                    href={`/${currentLocale}/login`}
                     className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary transition-colors"
                   >
                     <LogIn className="w-4 h-4" />
                     {t('login')}
                   </Link>
                   <Link
-                    href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}/register`}
+                    href={`/${currentLocale}/register`}
                     className="flex items-center gap-1.5 btn-primary text-sm !py-2 !px-4"
                   >
                     <UserPlus className="w-4 h-4" />
@@ -218,7 +214,7 @@ export function Navbar() {
               {navLinks.map(({ href, label, icon: Icon }) => (
                 <Link
                   key={href}
-                  href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}${href}`}
+                  href={`/${currentLocale}${href}`}
                   onClick={() => setMobileOpen(false)}
                   className={clsx(
                     'flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-colors',
@@ -236,7 +232,7 @@ export function Navbar() {
                 {isLoggedIn ? (
                   <>
                     <Link
-                      href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}/messages`}
+                      href={`/${currentLocale}/messages`}
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/5 transition-colors"
                     >
@@ -244,7 +240,7 @@ export function Navbar() {
                       {t('messages')}
                     </Link>
                     <Link
-                      href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}/profile`}
+                      href={`/${currentLocale}/profile`}
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/5 transition-colors"
                     >
@@ -255,7 +251,7 @@ export function Navbar() {
                 ) : (
                   <>
                     <Link
-                      href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}/login`}
+                      href={`/${currentLocale}/login`}
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
                     >
@@ -263,7 +259,7 @@ export function Navbar() {
                       {t('login')}
                     </Link>
                     <Link
-                      href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}/register`}
+                      href={`/${currentLocale}/register`}
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-2 mx-4 btn-primary text-sm justify-center"
                     >

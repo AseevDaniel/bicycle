@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Bike, Mail, Phone, MapPin, Facebook, Instagram, Twitter, Youtube } from 'lucide-react'
 
@@ -14,7 +15,12 @@ const LOCALES = [
 
 export function Footer() {
   const t = useTranslations('nav')
+  const pathname = usePathname()
   const currentYear = new Date().getFullYear()
+
+  const currentLocale =
+    LOCALES.find((l) => pathname.startsWith(`/${l.code}/`) || pathname === `/${l.code}`)
+      ?.code ?? 'en'
 
   return (
     <footer className="bg-secondary dark:bg-secondary-900 text-gray-300">
@@ -23,7 +29,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand column */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 group mb-4">
+            <Link href={`/${currentLocale}`} className="flex items-center gap-2 group mb-4">
               <div className="w-9 h-9 bg-gradient-orange rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
                 <Bike className="w-5 h-5 text-white" />
               </div>
@@ -81,15 +87,15 @@ export function Footer() {
             <h3 className="text-white font-semibold mb-4">Marketplace</h3>
             <ul className="space-y-2">
               {[
-                { href: '/buy', label: t('buy') },
+                { href: '/listings', label: t('buy') },
                 { href: '/sell', label: t('sell') },
-                { href: '/rent', label: t('rent') },
-                { href: '/repair', label: t('repair') },
+                { href: '/rentals', label: t('rent') },
+                { href: '/repairs', label: t('repair') },
                 { href: '/map', label: t('map') },
               ].map(({ href, label }) => (
                 <li key={href}>
                   <Link
-                    href={href}
+                    href={`/${currentLocale}${href}`}
                     className="text-sm text-gray-400 hover:text-primary transition-colors"
                   >
                     {label}
@@ -112,7 +118,7 @@ export function Footer() {
               ].map(({ href, label }) => (
                 <li key={href}>
                   <Link
-                    href={href}
+                    href={`/${currentLocale}${href}`}
                     className="text-sm text-gray-400 hover:text-primary transition-colors"
                   >
                     {label}
@@ -194,7 +200,7 @@ export function Footer() {
               ].map(({ href, label }) => (
                 <Link
                   key={href}
-                  href={href}
+                  href={`/${currentLocale}${href}`}
                   className="text-xs text-gray-500 hover:text-primary transition-colors"
                 >
                   {label}
@@ -207,7 +213,7 @@ export function Footer() {
               {LOCALES.map((locale) => (
                 <Link
                   key={locale.code}
-                  href={locale.code === 'en' ? '/' : `/${locale.code}`}
+                  href={`/${locale.code}`}
                   className="text-xs text-gray-500 hover:text-primary transition-colors px-1"
                   title={locale.label}
                 >
