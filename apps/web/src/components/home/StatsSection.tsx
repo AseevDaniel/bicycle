@@ -2,6 +2,71 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
+import * as THREE from 'three'
+
+function FloatingRings3D() {
+  const mountRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const mount = mountRef.current
+    if (!mount) return
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    renderer.setSize(mount.clientWidth, mount.clientHeight)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    mount.appendChild(renderer.domElement)
+
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(60, mount.clientWidth / mount.clientHeight, 0.1, 100)
+    camera.position.z = 8
+
+    // 6 floating torus rings with orange/teal colors
+    const rings: THREE.Mesh[] = []
+    const colors = [0xFF4D00, 0x00D4AA, 0xFF8C42, 0x00D4AA, 0xFF4D00, 0x00D4AA]
+    const positions: [number, number, number][] = [
+      [-6, 2, 0], [5, -1, -2], [-3, -3, -1], [6, 3, -1], [0, 2, -3], [-5, -2, -2]
+    ]
+    positions.forEach(([x, y, z], i) => {
+      const mat = new THREE.MeshStandardMaterial({ color: colors[i], wireframe: true, opacity: 0.6, transparent: true })
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.6 + i * 0.2, 0.04, 8, 24), mat)
+      ring.position.set(x, y, z)
+      scene.add(ring)
+      rings.push(ring)
+    })
+
+    scene.add(new THREE.AmbientLight(0xffffff, 1))
+
+    let animId: number, t = 0
+    const animate = () => {
+      animId = requestAnimationFrame(animate)
+      t += 0.01
+      rings.forEach((r, i) => {
+        r.rotation.x = t * (0.3 + i * 0.1)
+        r.rotation.y = t * (0.2 + i * 0.15)
+        r.position.y = positions[i][1] + Math.sin(t * 0.5 + i) * 0.3
+      })
+      renderer.render(scene, camera)
+    }
+    animate()
+
+    const handleResize = () => {
+      if (!mount) return
+      camera.aspect = mount.clientWidth / mount.clientHeight
+      camera.updateProjectionMatrix()
+      renderer.setSize(mount.clientWidth, mount.clientHeight)
+    }
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      cancelAnimationFrame(animId)
+      window.removeEventListener('resize', handleResize)
+      renderer.dispose()
+      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement)
+    }
+  }, [])
+
+  return <div ref={mountRef} className="absolute inset-0 opacity-30" />
+}
 
 interface Stat {
   value: number
@@ -78,6 +143,7 @@ function CountUp({ target, suffix, duration = 2000 }: { target: number; suffix: 
 export function StatsSection() {
   return (
     <section className="py-24 bg-primary-500 dark:bg-secondary-500 relative overflow-hidden">
+      <FloatingRings3D />
       {/* Background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-white/5 dark:bg-primary-500/5 rounded-full blur-3xl" />

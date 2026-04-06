@@ -1,10 +1,79 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
+import * as THREE from 'three'
+
+function FloatingOrbs3D() {
+  const mountRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const mount = mountRef.current
+    if (!mount) return
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    renderer.setSize(mount.clientWidth, mount.clientHeight)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    mount.appendChild(renderer.domElement)
+
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(60, mount.clientWidth / mount.clientHeight, 0.1, 100)
+    camera.position.z = 5
+
+    const shapes: { mesh: THREE.Mesh; baseY: number; speed: number; offset: number }[] = []
+    const colors = [0xFF4D00, 0x00D4AA, 0xFF4D00, 0x00D4AA, 0xFF4D00]
+    const xPositions = [-4, -2, 0, 2, 4]
+
+    xPositions.forEach((x, i) => {
+      const geo = i % 2 === 0
+        ? new THREE.IcosahedronGeometry(0.15, 0)
+        : new THREE.OctahedronGeometry(0.15, 0)
+      const mat = new THREE.MeshStandardMaterial({ color: colors[i], wireframe: true, opacity: 0.8, transparent: true })
+      const mesh = new THREE.Mesh(geo, mat)
+      mesh.position.set(x, 0, 0)
+      scene.add(mesh)
+      shapes.push({ mesh, baseY: 0, speed: 0.4 + i * 0.1, offset: i * (Math.PI / 2.5) })
+    })
+
+    scene.add(new THREE.AmbientLight(0xffffff, 1))
+    const orangeLight = new THREE.PointLight(0xFF4D00, 1, 20)
+    orangeLight.position.set(0, 2, 3)
+    scene.add(orangeLight)
+
+    let animId: number, t = 0
+    const animate = () => {
+      animId = requestAnimationFrame(animate)
+      t += 0.01
+      shapes.forEach(s => {
+        s.mesh.position.y = s.baseY + Math.sin(t * s.speed + s.offset) * 0.2
+        s.mesh.rotation.x += 0.01
+        s.mesh.rotation.y += 0.015
+      })
+      renderer.render(scene, camera)
+    }
+    animate()
+
+    const handleResize = () => {
+      if (!mount) return
+      camera.aspect = mount.clientWidth / mount.clientHeight
+      camera.updateProjectionMatrix()
+      renderer.setSize(mount.clientWidth, mount.clientHeight)
+    }
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      cancelAnimationFrame(animId)
+      window.removeEventListener('resize', handleResize)
+      renderer.dispose()
+      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement)
+    }
+  }, [])
+
+  return <div ref={mountRef} className="w-full" style={{ height: 120 }} />
+}
 
 const categories = [
   {
@@ -175,6 +244,9 @@ export function CategorySection() {
   return (
     <section className="py-20 bg-gray-50 dark:bg-secondary-900">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Floating 3D orbs above header */}
+        <FloatingOrbs3D />
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

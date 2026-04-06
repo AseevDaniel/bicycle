@@ -1,144 +1,148 @@
 'use client'
 
-import { useRef, Suspense } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import type { ThreeElements } from '@react-three/fiber'
-import { Torus, Box, Sphere, Cylinder, Float, Stars } from '@react-three/drei'
+import { useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import * as THREE from 'three'
 import { ChevronDown, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
-
-function BikeModel() {
-  const groupRef = useRef<THREE.Group>(null)
-
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.3
-      groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1
-    }
-  })
-
-  return (
-    <group ref={groupRef} scale={1.5}>
-      {/* Front wheel */}
-      <Torus args={[1, 0.08, 8, 32]} position={[1.5, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <meshStandardMaterial color="#FF4D00" wireframe />
-      </Torus>
-      {/* Front wheel spokes */}
-      <Torus args={[0.6, 0.03, 4, 16]} position={[1.5, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <meshStandardMaterial color="#FF6B30" wireframe />
-      </Torus>
-      {/* Rear wheel */}
-      <Torus args={[1, 0.08, 8, 32]} position={[-1.5, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <meshStandardMaterial color="#FF4D00" wireframe />
-      </Torus>
-      {/* Rear wheel spokes */}
-      <Torus args={[0.6, 0.03, 4, 16]} position={[-1.5, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <meshStandardMaterial color="#FF6B30" wireframe />
-      </Torus>
-      {/* Frame - main tube top */}
-      <Box args={[3.2, 0.08, 0.08]} position={[0, 0.5, 0]}>
-        <meshStandardMaterial color="#FF8C42" />
-      </Box>
-      {/* Frame - down tube */}
-      <Box args={[2.2, 0.08, 0.08]} position={[0.3, -0.2, 0]} rotation={[0, 0, -0.4]}>
-        <meshStandardMaterial color="#FF8C42" />
-      </Box>
-      {/* Seat tube */}
-      <Cylinder args={[0.05, 0.05, 1.3, 8]} position={[-0.5, 0.2, 0]} rotation={[0, 0, 0.15]}>
-        <meshStandardMaterial color="#FF8C42" />
-      </Cylinder>
-      {/* Fork */}
-      <Cylinder args={[0.05, 0.05, 1.3, 8]} position={[1.3, 0.1, 0]} rotation={[0, 0, -0.25]}>
-        <meshStandardMaterial color="#FF8C42" />
-      </Cylinder>
-      {/* Chain stay */}
-      <Box args={[2.0, 0.06, 0.06]} position={[0, -0.9, 0]}>
-        <meshStandardMaterial color="#FF8C42" />
-      </Box>
-      {/* Handlebars */}
-      <Box args={[0.7, 0.08, 0.08]} position={[1.55, 1.1, 0]}>
-        <meshStandardMaterial color="#00D4AA" />
-      </Box>
-      {/* Stem */}
-      <Cylinder args={[0.04, 0.04, 0.6, 8]} position={[1.5, 0.8, 0]}>
-        <meshStandardMaterial color="#00D4AA" />
-      </Cylinder>
-      {/* Saddle */}
-      <Box args={[0.55, 0.06, 0.18]} position={[-0.75, 1.35, 0]}>
-        <meshStandardMaterial color="#00D4AA" />
-      </Box>
-      {/* Seat post */}
-      <Cylinder args={[0.04, 0.04, 0.5, 8]} position={[-0.7, 1.05, 0]}>
-        <meshStandardMaterial color="#00D4AA" />
-      </Cylinder>
-      {/* Pedal crank */}
-      <Sphere args={[0.12, 8, 8]} position={[-0.1, -0.9, 0]}>
-        <meshStandardMaterial color="#FF4D00" emissive="#FF4D00" emissiveIntensity={0.3} />
-      </Sphere>
-    </group>
-  )
-}
-
-function FloatingParticle({ position }: { position: [number, number, number] }) {
-  const ref = useRef<THREE.Mesh>(null)
-  const speed = 0.3 + Math.random() * 0.5
-  const offset = Math.random() * Math.PI * 2
-
-  useFrame((state) => {
-    if (ref.current) {
-      ref.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed + offset) * 0.3
-      ref.current.rotation.x = state.clock.elapsedTime * 0.5
-      ref.current.rotation.z = state.clock.elapsedTime * 0.3
-    }
-  })
-
-  return (
-    <mesh ref={ref} position={position}>
-      <octahedronGeometry args={[0.05, 0]} />
-      <meshStandardMaterial color="#FF4D00" emissive="#FF4D00" emissiveIntensity={0.8} />
-    </mesh>
-  )
-}
-
-function Scene() {
-  const particles: [number, number, number][] = [
-    [-4, 2, -2], [4, -1, -3], [-3, -2, -1], [5, 2, -2],
-    [-5, 1, -4], [3, 3, -3], [-2, -3, -2], [4, -2, -4],
-    [0, 3, -3], [-4, 0, -3],
-  ]
-
-  return (
-    <>
-      <ambientLight intensity={0.3} />
-      <pointLight position={[5, 5, 5]} intensity={1.5} color="#FF4D00" />
-      <pointLight position={[-5, -5, -5]} intensity={0.8} color="#00D4AA" />
-      <pointLight position={[0, 0, 5]} intensity={0.5} color="#ffffff" />
-      <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={0.5} />
-      <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
-        <BikeModel />
-      </Float>
-      {particles.map((pos, i) => (
-        <FloatingParticle key={i} position={pos} />
-      ))}
-    </>
-  )
-}
+import * as THREE from 'three'
 
 function HeroCanvas() {
-  return (
-    <Canvas
-      camera={{ position: [0, 0, 6], fov: 50 }}
-      className="absolute inset-0"
-      dpr={[1, 2]}
-    >
-      <Suspense fallback={null}>
-        <Scene />
-      </Suspense>
-    </Canvas>
-  )
+  const mountRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!mountRef.current) return
+    const mount = mountRef.current
+    const width = mount.clientWidth
+    const height = mount.clientHeight
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    renderer.setSize(width, height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setClearColor(0x000000, 0)
+    mount.appendChild(renderer.domElement)
+
+    // Scene & Camera
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000)
+    camera.position.set(0, 0, 6)
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.4))
+    const orangeLight = new THREE.PointLight(0xFF4D00, 2, 20)
+    orangeLight.position.set(5, 5, 5)
+    scene.add(orangeLight)
+    const tealLight = new THREE.PointLight(0x00D4AA, 1, 20)
+    tealLight.position.set(-5, -5, -5)
+    scene.add(tealLight)
+
+    // Stars
+    const starGeo = new THREE.BufferGeometry()
+    const starCount = 3000
+    const starPositions = new Float32Array(starCount * 3)
+    for (let i = 0; i < starCount * 3; i++) {
+      starPositions[i] = (Math.random() - 0.5) * 200
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3))
+    const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.15, sizeAttenuation: true })
+    scene.add(new THREE.Points(starGeo, starMat))
+
+    // Bike model group
+    const bikeGroup = new THREE.Group()
+    bikeGroup.scale.setScalar(1.5)
+    scene.add(bikeGroup)
+
+    const orangeMat = new THREE.MeshStandardMaterial({ color: 0xFF8C42 })
+    const tealMat = new THREE.MeshStandardMaterial({ color: 0x00D4AA })
+    const wheelMat = new THREE.MeshStandardMaterial({ color: 0xFF4D00, wireframe: true })
+
+    // Wheels
+    const wheelGeo = new THREE.TorusGeometry(1, 0.08, 8, 32)
+    const fw = new THREE.Mesh(wheelGeo, wheelMat)
+    fw.position.set(1.5, 0, 0); fw.rotation.y = Math.PI / 2
+    bikeGroup.add(fw)
+    const rw = new THREE.Mesh(wheelGeo, wheelMat)
+    rw.position.set(-1.5, 0, 0); rw.rotation.y = Math.PI / 2
+    bikeGroup.add(rw)
+
+    // Frame tubes
+    const addBox = (w: number, h: number, d: number, x: number, y: number, z: number, mat: THREE.Material, rx = 0, ry = 0, rz = 0) => {
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat)
+      mesh.position.set(x, y, z); mesh.rotation.set(rx, ry, rz)
+      bikeGroup.add(mesh)
+    }
+    const addCyl = (r: number, h: number, x: number, y: number, z: number, mat: THREE.Material, rz = 0) => {
+      const mesh = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 8), mat)
+      mesh.position.set(x, y, z); mesh.rotation.z = rz
+      bikeGroup.add(mesh)
+    }
+
+    addBox(3.2, 0.08, 0.08, 0, 0.5, 0, orangeMat)        // top tube
+    addBox(2.2, 0.08, 0.08, 0.3, -0.2, 0, orangeMat, 0, 0, -0.4) // down tube
+    addBox(2.0, 0.06, 0.06, 0, -0.9, 0, orangeMat)         // chainstay
+    addBox(0.7, 0.08, 0.08, 1.55, 1.1, 0, tealMat)         // handlebars
+    addBox(0.55, 0.06, 0.18, -0.75, 1.35, 0, tealMat)      // saddle
+    addCyl(0.05, 1.3, -0.5, 0.2, 0, orangeMat, 0.15)       // seat tube
+    addCyl(0.05, 1.3, 1.3, 0.1, 0, orangeMat, -0.25)       // fork
+    addCyl(0.04, 0.6, 1.5, 0.8, 0, tealMat)                // stem
+    addCyl(0.04, 0.5, -0.7, 1.05, 0, tealMat)              // seatpost
+
+    // BB
+    const bbMesh = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), new THREE.MeshStandardMaterial({ color: 0xFF4D00, emissive: 0xFF4D00, emissiveIntensity: 0.3 }))
+    bbMesh.position.set(-0.1, -0.9, 0)
+    bikeGroup.add(bbMesh)
+
+    // Floating particles
+    const particles: { mesh: THREE.Mesh; baseY: number; speed: number; offset: number }[] = []
+    const particlePositions: [number, number, number][] = [
+      [-4, 2, -2], [4, -1, -3], [-3, -2, -1], [5, 2, -2],
+      [-5, 1, -4], [3, 3, -3], [-2, -3, -2], [4, -2, -4],
+      [0, 3, -3], [-4, 0, -3],
+    ]
+    const particleMat = new THREE.MeshStandardMaterial({ color: 0xFF4D00, emissive: 0xFF4D00, emissiveIntensity: 0.8 })
+    particlePositions.forEach(([px, py, pz]) => {
+      const mesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.05, 0), particleMat)
+      mesh.position.set(px, py, pz)
+      scene.add(mesh)
+      particles.push({ mesh, baseY: py, speed: 0.3 + Math.random() * 0.5, offset: Math.random() * Math.PI * 2 })
+    })
+
+    // Animation loop
+    let animId: number
+    let time = 0
+    const animate = () => {
+      animId = requestAnimationFrame(animate)
+      time += 0.016
+      bikeGroup.rotation.y = Math.sin(time * 0.3) * 0.3
+      bikeGroup.position.y = Math.sin(time * 0.5) * 0.1
+      particles.forEach(p => {
+        p.mesh.position.y = p.baseY + Math.sin(time * p.speed + p.offset) * 0.3
+        p.mesh.rotation.x = time * 0.5
+        p.mesh.rotation.z = time * 0.3
+      })
+      renderer.render(scene, camera)
+    }
+    animate()
+
+    // Resize handler
+    const handleResize = () => {
+      const w = mount.clientWidth, h = mount.clientHeight
+      camera.aspect = w / h
+      camera.updateProjectionMatrix()
+      renderer.setSize(w, h)
+    }
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      cancelAnimationFrame(animId)
+      window.removeEventListener('resize', handleResize)
+      renderer.dispose()
+      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement)
+    }
+  }, [])
+
+  return <div ref={mountRef} className="absolute inset-0" />
 }
 
 const stats = [
