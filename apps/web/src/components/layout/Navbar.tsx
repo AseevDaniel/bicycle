@@ -73,10 +73,10 @@ export function Navbar() {
   }
 
   const navLinks = [
-    { href: '/buy', label: t('buy'), icon: ShoppingBag },
+    { href: '/listings', label: t('buy'), icon: ShoppingBag },
     { href: '/sell', label: t('sell'), icon: Tag },
-    { href: '/rent', label: t('rent'), icon: Bike },
-    { href: '/repair', label: t('repair'), icon: Wrench },
+    { href: '/rentals', label: t('rent'), icon: Bike },
+    { href: '/repairs', label: t('repair'), icon: Wrench },
     { href: '/map', label: t('map'), icon: Map },
   ]
 
@@ -190,7 +190,7 @@ export function Navbar() {
                     {t('login')}
                   </Link>
                   <Link
-                    href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}/signup`}
+                    href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}/register`}
                     className="flex items-center gap-1.5 btn-primary text-sm !py-2 !px-4"
                   >
                     <UserPlus className="w-4 h-4" />
@@ -263,7 +263,7 @@ export function Navbar() {
                       {t('login')}
                     </Link>
                     <Link
-                      href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}/signup`}
+                      href={`${currentLocale === 'en' ? '' : `/${currentLocale}`}/register`}
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-2 mx-4 btn-primary text-sm justify-center"
                     >
