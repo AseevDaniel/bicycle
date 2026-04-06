@@ -6,75 +6,141 @@ import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-function WheelCanvas() {
+function BikeModelCanvas() {
   const mountRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!mountRef.current) return
     const mount = mountRef.current
-    const width = mount.clientWidth
-    const height = mount.clientHeight
+    if (!mount) return
 
-    // Renderer
+    // Renderer setup — high quality
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    renderer.setSize(width, height)
+    renderer.setSize(mount.clientWidth, mount.clientHeight)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.setClearColor(0x000000, 0)
+    renderer.shadowMap.enabled = true
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.2
     mount.appendChild(renderer.domElement)
 
-    // Scene & Camera
+    // Scene
     const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000)
-    camera.position.set(0, 0, 7)
 
-    // Lights
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5))
-    const orangeLight = new THREE.PointLight(0xFF4D00, 2, 30)
-    orangeLight.position.set(3, 3, 4)
-    scene.add(orangeLight)
-    const tealLight = new THREE.PointLight(0x00D4AA, 1, 30)
-    tealLight.position.set(-4, -2, -3)
-    scene.add(tealLight)
+    // Camera — 3/4 angle view, slightly elevated, looking at bike center
+    const camera = new THREE.PerspectiveCamera(40, mount.clientWidth / mount.clientHeight, 0.1, 100)
+    camera.position.set(3.5, 1.8, 5)
+    camera.lookAt(0, 0.5, 0)
 
-    // Wheel group
-    const wheelGroup = new THREE.Group()
-    scene.add(wheelGroup)
+    // Lighting — like a product shoot
+    // Key light: warm directional from upper-front-right
+    const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.5)
+    keyLight.position.set(5, 8, 6)
+    keyLight.castShadow = true
+    keyLight.shadow.mapSize.width = 1024
+    keyLight.shadow.mapSize.height = 1024
+    scene.add(keyLight)
 
-    // Outer tire
-    const tireMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.3, roughness: 0.7 })
-    const tireGeo = new THREE.TorusGeometry(2.2, 0.22, 20, 80)
-    wheelGroup.add(new THREE.Mesh(tireGeo, tireMat))
+    // Fill light: soft cool from left
+    const fillLight = new THREE.DirectionalLight(0xd0e8ff, 0.8)
+    fillLight.position.set(-5, 3, 2)
+    scene.add(fillLight)
 
-    // Rim
-    const rimMat = new THREE.MeshStandardMaterial({ color: 0xFF4D00, metalness: 0.8, roughness: 0.2 })
-    const rimGeo = new THREE.TorusGeometry(2.05, 0.07, 16, 80)
-    wheelGroup.add(new THREE.Mesh(rimGeo, rimMat))
+    // Rim light: orange from behind-right (brand accent)
+    const rimLight = new THREE.PointLight(0xFF4D00, 1.5, 20)
+    rimLight.position.set(-2, 2, -5)
+    scene.add(rimLight)
 
-    // Inner rim ring
-    const innerRimMat = new THREE.MeshStandardMaterial({ color: 0xFF6B30, metalness: 0.7, roughness: 0.3 })
-    const innerRimGeo = new THREE.TorusGeometry(1.7, 0.04, 12, 80)
-    wheelGroup.add(new THREE.Mesh(innerRimGeo, innerRimMat))
+    // Ambient: very soft to avoid pure blacks
+    scene.add(new THREE.AmbientLight(0xffffff, 0.3))
 
-    // Hub
-    const hubMat = new THREE.MeshStandardMaterial({ color: 0xFF4D00, metalness: 0.9, roughness: 0.1 })
-    const hubGeo = new THREE.SphereGeometry(0.18, 16, 16)
-    wheelGroup.add(new THREE.Mesh(hubGeo, hubMat))
+    // Ground plane — subtle shadow catcher
+    const groundGeo = new THREE.PlaneGeometry(20, 20)
+    const groundMat = new THREE.ShadowMaterial({ opacity: 0.3 })
+    const ground = new THREE.Mesh(groundGeo, groundMat)
+    ground.rotation.x = -Math.PI / 2
+    ground.position.y = -1.5
+    ground.receiveShadow = true
+    scene.add(ground)
 
-    // 16 spokes
-    const spokeMat = new THREE.MeshStandardMaterial({ color: 0xFF8C42, metalness: 0.6, roughness: 0.4 })
-    const spokeCount = 16
-    for (let i = 0; i < spokeCount; i++) {
-      const angle = (i / spokeCount) * Math.PI * 2
-      const spokeGeo = new THREE.CylinderGeometry(0.018, 0.018, 1.85, 6)
-      const spoke = new THREE.Mesh(spokeGeo, spokeMat)
-      // Position at midpoint between hub and inner rim (~0.92 from center)
-      spoke.position.x = Math.cos(angle) * 0.92
-      spoke.position.y = Math.sin(angle) * 0.92
-      // Rotate so the cylinder points radially outward
-      spoke.rotation.z = angle + Math.PI / 2
-      wheelGroup.add(spoke)
+    // Model group for rotation
+    const modelGroup = new THREE.Group()
+    scene.add(modelGroup)
+
+    // Loading state - simple rotating ring while loading
+    const loadingRingGeo = new THREE.TorusGeometry(0.5, 0.04, 8, 32)
+    const loadingRingMat = new THREE.MeshBasicMaterial({ color: 0xFF4D00, transparent: true, opacity: 0.7 })
+    const loadingRing = new THREE.Mesh(loadingRingGeo, loadingRingMat)
+    scene.add(loadingRing)
+
+    // Load the GLTF model
+    // basePath is /bicycle, so URL is /bicycle/models/bmx_bike/scene.gltf
+    const loader = new GLTFLoader()
+    loader.load(
+      '/bicycle/models/bmx_bike/scene.gltf',
+      (gltf) => {
+        // Remove loading indicator
+        scene.remove(loadingRing)
+
+        const model = gltf.scene
+
+        // Enable shadows on all meshes
+        model.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            child.castShadow = true
+            child.receiveShadow = true
+          }
+        })
+
+        // Auto-scale and center the model
+        const box = new THREE.Box3().setFromObject(model)
+        const size = box.getSize(new THREE.Vector3())
+        const center = box.getCenter(new THREE.Vector3())
+        const maxDim = Math.max(size.x, size.y, size.z)
+        const targetSize = 3.5
+        const scale = targetSize / maxDim
+        model.scale.setScalar(scale)
+
+        // Center the model
+        model.position.x = -center.x * scale
+        model.position.y = -center.y * scale + 0.2 // slight vertical adjustment
+        model.position.z = -center.z * scale
+
+        modelGroup.add(model)
+      },
+      undefined,
+      (error) => {
+        console.error('Failed to load bike model:', error)
+        // Fallback: keep showing a nicer placeholder
+        scene.remove(loadingRing)
+        // Simple bike silhouette fallback
+        const fallbackGeo = new THREE.TorusGeometry(1.2, 0.08, 12, 48)
+        const fallbackMat = new THREE.MeshStandardMaterial({ color: 0xFF4D00, metalness: 0.5, roughness: 0.3 })
+        const fallbackMesh = new THREE.Mesh(fallbackGeo, fallbackMat)
+        fallbackMesh.rotation.y = Math.PI / 2
+        modelGroup.add(fallbackMesh)
+      }
+    )
+
+    // Mouse parallax state
+    let targetRotY = 0.15   // initial slight angle
+    let targetRotX = 0.05
+    let currentRotY = 0.15
+    let currentRotX = 0.05
+    let lastMouseTime = 0
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Normalize to -0.5…+0.5 across full window
+      const nx = (e.clientX / window.innerWidth) - 0.5
+      const ny = (e.clientY / window.innerHeight) - 0.5
+      // Mouse left → show more right side; mouse right → show more left side
+      targetRotY = -nx * 0.9   // ±0.45 rad horizontal
+      targetRotX =  ny * 0.25  // ±0.125 rad vertical tilt
+      lastMouseTime = Date.now()
     }
+    window.addEventListener('mousemove', handleMouseMove)
 
     // Animation loop
     let animId: number
@@ -82,16 +148,34 @@ function WheelCanvas() {
     const animate = () => {
       animId = requestAnimationFrame(animate)
       t += 0.016
-      // Spin on Z axis like a real wheel
-      wheelGroup.rotation.z -= 0.005
-      // Subtle Y oscillation for 3D perspective feel
-      wheelGroup.rotation.y = Math.sin(t * 0.4) * 0.25
+
+      // Loading ring spin
+      loadingRing.rotation.z += 0.05
+      loadingRing.rotation.x = Math.PI / 4
+
+      // Idle rocking when mouse hasn't moved for 2 s
+      if (Date.now() - lastMouseTime > 2000) {
+        targetRotY = Math.sin(t * 0.25) * 0.18
+        targetRotX = Math.sin(t * 0.18) * 0.06
+      }
+
+      // Spring lerp — smooth spring-like catch-up
+      currentRotY += (targetRotY - currentRotY) * 0.04
+      currentRotX += (targetRotX - currentRotX) * 0.04
+
+      modelGroup.rotation.y = currentRotY
+      modelGroup.rotation.x = currentRotX
+
+      // Subtle float
+      modelGroup.position.y = Math.sin(t * 0.4) * 0.07
+
       renderer.render(scene, camera)
     }
     animate()
 
     // Resize handler
     const handleResize = () => {
+      if (!mount) return
       const w = mount.clientWidth
       const h = mount.clientHeight
       camera.aspect = w / h
@@ -103,12 +187,15 @@ function WheelCanvas() {
     return () => {
       cancelAnimationFrame(animId)
       window.removeEventListener('resize', handleResize)
+      window.removeEventListener('mousemove', handleMouseMove)
       renderer.dispose()
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement)
     }
   }, [])
 
-  return <div ref={mountRef} className="absolute inset-0" />
+  return (
+    <div ref={mountRef} className="w-full h-full" />
+  )
 }
 
 const stats = [
@@ -123,14 +210,16 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-screen bg-[#0A0A0A] flex items-center overflow-hidden">
-      {/* Subtle radial glow behind wheel */}
-      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[50%] h-[80%] bg-primary-500/8 rounded-full blur-[120px] pointer-events-none" />
+      {/* Radial glow behind bike area */}
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[55%] h-[90%] bg-primary-500/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute left-0 bottom-0 w-[40%] h-[50%] bg-accent-500/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative z-10 w-full container mx-auto px-6 lg:px-8">
-        <div className="flex items-center gap-8 min-h-screen">
+        <div className="flex items-center min-h-screen gap-4">
 
-          {/* Left: text content */}
-          <div className="flex-1 max-w-2xl pt-20 pb-16">
+          {/* Left: text */}
+          <div className="flex-1 max-w-2xl pt-24 pb-20">
+
             {/* Location badge */}
             <motion.div
               initial={{ opacity: 0, y: -16 }}
@@ -139,15 +228,15 @@ export function HeroSection() {
               className="inline-flex items-center gap-2 border border-white/15 rounded-full px-4 py-1.5 mb-8"
             >
               <span className="w-2 h-2 rounded-full bg-accent-400 animate-pulse" />
-              <span className="text-white/60 text-sm tracking-wide">Costa del Sol, Spain</span>
+              <span className="text-white/55 text-sm tracking-wide">Costa del Sol, Spain</span>
             </motion.div>
 
-            {/* Headline - very large */}
+            {/* Headline */}
             <motion.h1
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="text-6xl sm:text-7xl lg:text-8xl font-black text-white leading-[0.95] tracking-tight mb-6"
+              className="text-6xl sm:text-7xl lg:text-8xl font-black text-white leading-[0.92] tracking-tight mb-7"
             >
               Buy.<br />
               <span className="text-primary-500">Sell.</span><br />
@@ -158,9 +247,9 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
-              className="text-white/50 text-xl leading-relaxed mb-10 max-w-lg"
+              className="text-white/45 text-lg leading-relaxed mb-10 max-w-md"
             >
-              Costa del Sol&apos;s premier cycling marketplace. Buy, sell, rent and service bikes — locally, safely, simply.
+              Costa del Sol's premier cycling marketplace. Buy, sell, rent and service bikes — locally, safely, simply.
             </motion.p>
 
             {/* CTAs */}
@@ -172,9 +261,10 @@ export function HeroSection() {
             >
               <Link
                 href={`/${locale}/listings`}
-                className="flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white font-bold px-7 py-3.5 rounded-xl text-base transition-all hover:scale-105 shadow-lg shadow-primary-500/25"
+                className="flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white font-bold px-7 py-3.5 rounded-xl text-base transition-all hover:scale-105 shadow-xl shadow-primary-500/20"
               >
-                Browse Bikes <ArrowRight className="w-4 h-4" />
+                Browse Bikes
+                <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href={`/${locale}/sell`}
@@ -184,32 +274,34 @@ export function HeroSection() {
               </Link>
             </motion.div>
 
-            {/* Stats row */}
+            {/* Stats */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="flex gap-8 border-t border-white/10 pt-8"
+              className="flex flex-wrap gap-8 border-t border-white/10 pt-8"
             >
               {stats.map((s, i) => (
                 <div key={i}>
                   <div className="text-2xl font-black text-white">{s.value}</div>
-                  <div className="text-white/40 text-xs mt-0.5">{s.label}</div>
+                  <div className="text-white/35 text-xs mt-0.5 uppercase tracking-wide">{s.label}</div>
                 </div>
               ))}
             </motion.div>
           </div>
 
-          {/* Right: 3D Wheel */}
-          <div className="hidden lg:block flex-shrink-0 w-[45%] h-screen relative">
-            <WheelCanvas />
+          {/* Right: 3D Bike Model */}
+          <div className="hidden lg:block flex-shrink-0 w-[48%] h-[85vh] relative">
+            <BikeModelCanvas />
+            {/* Bottom fade so bike blends with page */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none" />
           </div>
 
         </div>
       </div>
 
-      {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0A0A0A] to-transparent z-10" />
+      {/* Bottom page fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0A0A0A] to-transparent z-20 pointer-events-none" />
     </section>
   )
 }
