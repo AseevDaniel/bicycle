@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { motion } from 'framer-motion'
 import { MapPin, Clock, Truck, Globe } from 'lucide-react'
 import { StarRating } from '@/components/ui/StarRating'

@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { motion } from 'framer-motion'
 import {
   ArrowLeft,
