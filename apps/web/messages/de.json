@@ -1,0 +1,149 @@
+{
+  "nav": {
+    "buy": "Fahrrad kaufen",
+    "sell": "Fahrrad verkaufen",
+    "rent": "Fahrrad mieten",
+    "repair": "Reparatur",
+    "map": "Kartenansicht",
+    "messages": "Nachrichten",
+    "profile": "Profil",
+    "login": "Anmelden",
+    "signup": "Registrieren",
+    "logout": "Abmelden"
+  },
+  "home": {
+    "hero": {
+      "title": "Finden Sie Ihr perfektes Fahrrad an der",
+      "titleHighlight": "Costa del Sol",
+      "subtitle": "Der führende Fahrradmarktplatz für Radfahrer, Touristen und Expats. Kaufen, verkaufen, mieten oder Ihr Fahrrad reparieren lassen.",
+      "ctaBuy": "Fahrräder durchsuchen",
+      "ctaSell": "Fahrrad verkaufen",
+      "ctaRent": "Fahrrad mieten",
+      "stats": {
+        "listings": "Aktive Anzeigen",
+        "cities": "Städte",
+        "mechanics": "Mechaniker",
+        "renters": "Zufriedene Mieter"
+      }
+    },
+    "categories": {
+      "title": "Nach Kategorie suchen",
+      "subtitle": "Finden Sie genau das Richtige"
+    },
+    "featured": {
+      "title": "Ausgewählte Fahrräder",
+      "subtitle": "Handverlesene Qualitätsangebote",
+      "viewAll": "Alle anzeigen"
+    },
+    "howItWorks": {
+      "title": "Wie es funktioniert",
+      "sell": {
+        "title": "Fahrrad verkaufen",
+        "steps": ["Fotos machen", "In Minuten inserieren", "Sicher bezahlt werden"]
+      },
+      "buy": {
+        "title": "Fahrrad kaufen",
+        "steps": ["Durchsuchen & filtern", "Verkäufer kontaktieren", "Treffen & fahren"]
+      },
+      "rent": {
+        "title": "Fahrrad mieten",
+        "steps": ["Datum wählen", "Online buchen", "Abholen & fahren"]
+      }
+    },
+    "trust": {
+      "title": "Sicher & Vertrauenswürdig",
+      "verified": "Verifizierte Verkäufer",
+      "reviews": "Ehrliche Bewertungen",
+      "secure": "Sichere Transaktionen",
+      "support": "Lokaler Support"
+    }
+  },
+  "listings": {
+    "title": "Fahrräder zum Verkauf",
+    "subtitle": "Finden Sie Ihr perfektes Fahrrad an der Costa del Sol",
+    "filters": {
+      "type": "Fahrradtyp",
+      "price": "Preisbereich",
+      "condition": "Zustand",
+      "brand": "Marke",
+      "location": "Standort",
+      "sortBy": "Sortieren nach",
+      "all": "Alle Typen"
+    },
+    "sort": {
+      "newest": "Neueste zuerst",
+      "priceAsc": "Preis: Aufsteigend",
+      "priceDesc": "Preis: Absteigend",
+      "nearest": "Nächste zuerst"
+    },
+    "noResults": "Keine Fahrräder gefunden, die Ihren Kriterien entsprechen",
+    "viewMap": "Auf Karte anzeigen",
+    "viewGrid": "Rasteransicht",
+    "condition": {
+      "A": "Wie neu",
+      "B": "Ausgezeichnet",
+      "C": "Gut",
+      "D": "Akzeptabel",
+      "E": "Schlecht",
+      "F": "Projekt"
+    }
+  },
+  "rental": {
+    "title": "Fahrrad mieten",
+    "subtitle": "Tages-, Wochen- und Monatsmiete",
+    "perDay": "/ Tag",
+    "perWeek": "/ Woche",
+    "perMonth": "/ Monat",
+    "deposit": "Kaution",
+    "book": "Jetzt buchen",
+    "available": "Verfügbar",
+    "unavailable": "Nicht verfügbar"
+  },
+  "repair": {
+    "title": "Fahrradreparatur",
+    "subtitle": "Finden Sie erfahrene Mechaniker in Ihrer Nähe",
+    "bookService": "Service buchen",
+    "mobile": "Mobiler Mechaniker",
+    "responseTime": "Reaktionszeit",
+    "services": "Leistungen"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "signup": "Konto erstellen",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "name": "Vollständiger Name",
+    "forgotPassword": "Passwort vergessen?",
+    "noAccount": "Noch kein Konto?",
+    "hasAccount": "Bereits ein Konto?",
+    "orContinueWith": "Oder weiter mit",
+    "terms": "Mit der Registrierung stimmen Sie unseren Nutzungsbedingungen und Datenschutzrichtlinien zu"
+  },
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Etwas ist schiefgelaufen",
+    "retry": "Erneut versuchen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "close": "Schließen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "submit": "Absenden",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "clear": "Löschen",
+    "seeAll": "Alle anzeigen",
+    "readMore": "Mehr lesen",
+    "contact": "Kontakt",
+    "share": "Teilen",
+    "report": "Melden",
+    "favorite": "Zu Favoriten hinzufügen",
+    "unfavorite": "Aus Favoriten entfernen",
+    "EUR": "€",
+    "perDay": "pro Tag",
+    "verified": "Verifiziert",
+    "new": "Neu",
+    "featured": "Empfohlen"
+  }
+}
