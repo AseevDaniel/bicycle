@@ -6,79 +6,6 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
-import * as THREE from 'three'
-
-function ParticleField3D() {
-  const mountRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const mount = mountRef.current
-    if (!mount) return
-
-    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true })
-    renderer.setSize(mount.clientWidth, mount.clientHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
-    mount.appendChild(renderer.domElement)
-
-    const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(60, mount.clientWidth / mount.clientHeight, 0.1, 100)
-    camera.position.z = 10
-
-    // 200 small drifting particles
-    const geo = new THREE.BufferGeometry()
-    const count = 200
-    const positions = new Float32Array(count * 3)
-    const velocities = new Float32Array(count * 3)
-    for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 30
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 20
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 10
-      velocities[i * 3] = (Math.random() - 0.5) * 0.005
-      velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.005
-      velocities[i * 3 + 2] = 0
-    }
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    const mat = new THREE.PointsMaterial({ color: 0xFF8C42, size: 0.08, sizeAttenuation: true })
-    const points = new THREE.Points(geo, mat)
-    scene.add(points)
-
-    let animId: number
-    const posAttr = geo.attributes.position as THREE.BufferAttribute
-    const animate = () => {
-      animId = requestAnimationFrame(animate)
-      const arr = posAttr.array as Float32Array
-      for (let i = 0; i < count; i++) {
-        arr[i * 3] += velocities[i * 3]
-        arr[i * 3 + 1] += velocities[i * 3 + 1]
-        // Wrap around bounds
-        if (arr[i * 3] > 15) arr[i * 3] = -15
-        if (arr[i * 3] < -15) arr[i * 3] = 15
-        if (arr[i * 3 + 1] > 10) arr[i * 3 + 1] = -10
-        if (arr[i * 3 + 1] < -10) arr[i * 3 + 1] = 10
-      }
-      posAttr.needsUpdate = true
-      renderer.render(scene, camera)
-    }
-    animate()
-
-    const handleResize = () => {
-      if (!mount) return
-      camera.aspect = mount.clientWidth / mount.clientHeight
-      camera.updateProjectionMatrix()
-      renderer.setSize(mount.clientWidth, mount.clientHeight)
-    }
-    window.addEventListener('resize', handleResize)
-
-    return () => {
-      cancelAnimationFrame(animId)
-      window.removeEventListener('resize', handleResize)
-      renderer.dispose()
-      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement)
-    }
-  }, [])
-
-  return <div ref={mountRef} className="absolute inset-0 opacity-15" />
-}
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -133,7 +60,7 @@ function StepCard({ column, index, locale }: { column: typeof columns[0]; index:
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className="relative"
     >
-      <div className="bg-gray-50 border border-gray-200 dark:bg-white/5 dark:backdrop-blur-sm dark:border-white/10 rounded-2xl p-8 hover:border-primary-300 dark:hover:border-white/20 hover:shadow-lg dark:hover:shadow-none transition-all duration-300 h-full group">
+      <div className="bg-white border border-gray-200 dark:bg-white/5 dark:backdrop-blur-sm dark:border-white/10 rounded-2xl p-8 hover:border-primary-300 dark:hover:border-white/20 hover:shadow-lg dark:hover:shadow-none transition-all duration-300 h-full group">
         {/* Icon circle */}
         <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${column.accent} flex items-center justify-center text-3xl mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
           {column.icon}

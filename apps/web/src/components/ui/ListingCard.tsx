@@ -47,9 +47,11 @@ export function ListingCard({
   const photo = photos[0] || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=400&q=80'
 
   return (
-    <div className="group relative bg-white border border-gray-200 dark:bg-secondary-500/40 dark:backdrop-blur-sm dark:border-white/10 rounded-2xl overflow-hidden hover:border-primary-400 dark:hover:border-primary-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 hover:-translate-y-1">
+    <div className="group relative bg-white border border-gray-200 dark:bg-secondary-500/40 dark:backdrop-blur-sm dark:border-white/10 rounded-2xl overflow-hidden hover:border-primary-400 dark:hover:border-primary-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1">
+      {/* Top accent line on hover */}
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-10" />
       {/* Photo */}
-      <div className="relative h-52 overflow-hidden bg-gray-100 dark:bg-secondary-700">
+      <div className="relative h-56 overflow-hidden bg-gray-100 dark:bg-secondary-700">
         {!imgError ? (
           <img
             src={photo}
@@ -114,9 +116,9 @@ export function ListingCard({
         </div>
 
         {/* Price row */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-end justify-between">
           <div>
-            <span className="text-2xl font-bold text-primary-500 dark:text-primary-400">
+            <span className="text-2xl font-black text-primary-500">
               €{price.toLocaleString()}
             </span>
             {isNegotiable && (
@@ -129,7 +131,7 @@ export function ListingCard({
 
           <Link
             href={`/${locale}/listings/${id}`}
-            className="flex items-center gap-1.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-3.5 py-2 rounded-xl transition-colors"
+            className="flex items-center gap-1.5 bg-primary-500 hover:bg-primary-400 text-white text-sm font-bold px-4 py-2 rounded-xl transition-all hover:scale-105 shadow-md shadow-primary-500/20"
           >
             <Eye className="w-3.5 h-3.5" />
             View
