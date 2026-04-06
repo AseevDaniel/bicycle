@@ -2,7 +2,8 @@
 
 import { useRef, Suspense } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Torus, Box, Sphere, Cylinder, Float, Stars, OrbitControls } from '@react-three/drei'
+import type { ThreeElements } from '@react-three/fiber'
+import { Torus, Box, Sphere, Cylinder, Float, Stars } from '@react-three/drei'
 import { motion } from 'framer-motion'
 import * as THREE from 'three'
 import { ChevronDown, ArrowRight } from 'lucide-react'

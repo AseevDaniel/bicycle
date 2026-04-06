@@ -6,7 +6,7 @@ type ConditionVariant = 'A' | 'B' | 'C' | 'D'
 type BadgeVariant = 'condition' | 'type' | 'featured' | 'new' | 'default'
 
 interface BadgeProps {
-  children: React.ReactNode
+  children?: React.ReactNode
   variant?: BadgeVariant
   condition?: ConditionVariant
   className?: string
