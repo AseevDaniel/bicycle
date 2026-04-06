@@ -7,6 +7,8 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { AuthProvider } from '@/lib/auth'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { MobileNav } from '@/components/layout/MobileNav'
+import { ScrollToTop } from '@/components/ui/ScrollToTop'
 import { Toaster } from 'react-hot-toast'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
@@ -63,9 +65,11 @@ export default async function LocaleLayout({
             <AuthProvider>
               <div className="min-h-screen flex flex-col">
                 <Navbar />
-                <main className="flex-1">{children}</main>
+                <main className="flex-1 pb-16 md:pb-0">{children}</main>
                 <Footer />
+                <MobileNav />
               </div>
+              <ScrollToTop />
               <Toaster position="bottom-right" />
             </AuthProvider>
           </ThemeProvider>
