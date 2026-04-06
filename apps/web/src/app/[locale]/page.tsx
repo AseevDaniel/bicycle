@@ -1,4 +1,4 @@
-import { HeroSection } from '@/components/home/HeroSection'
+import { HeroSectionClient as HeroSection } from '@/components/home/HeroSectionClient'
 import { CategorySection } from '@/components/home/CategorySection'
 import { StatsSection } from '@/components/home/StatsSection'
 import { FeaturedListings } from '@/components/home/FeaturedListings'
