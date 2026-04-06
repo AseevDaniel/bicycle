@@ -179,6 +179,10 @@ const FLAG_MAP: Record<string, string> = {
   es: '🇪🇸', en: '🇬🇧', de: '🇩🇪', fr: '🇫🇷', ru: '🇷🇺', uk: '🇺🇦', nl: '🇳🇱', pt: '🇵🇹',
 }
 
+export function generateStaticParams() {
+  return ['m1', 'm2', 'm3', 'm4'].map((id) => ({ id }))
+}
+
 export default function MechanicProfilePage() {
   const params = useParams()
   const id = params.id as string
