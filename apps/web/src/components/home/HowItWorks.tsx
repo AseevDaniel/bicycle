@@ -60,7 +60,7 @@ function StepCard({ column, index, locale }: { column: typeof columns[0]; index:
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className="relative"
     >
-      <div className="bg-gray-50 border border-gray-200 dark:bg-white/5 dark:backdrop-blur-sm dark:border-white/10 rounded-2xl p-8 hover:border-primary-300 dark:hover:border-white/20 hover:shadow-lg dark:hover:shadow-none transition-all duration-300 h-full group">
+      <div className="bg-white border border-gray-200 dark:bg-white/5 dark:backdrop-blur-sm dark:border-white/10 rounded-2xl p-8 hover:border-primary-300 dark:hover:border-white/20 hover:shadow-lg dark:hover:shadow-none transition-all duration-300 h-full group">
         {/* Icon circle */}
         <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${column.accent} flex items-center justify-center text-3xl mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
           {column.icon}

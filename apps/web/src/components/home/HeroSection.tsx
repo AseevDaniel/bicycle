@@ -1,276 +1,215 @@
 'use client'
 
-import { useRef, Suspense } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import type { ThreeElements } from '@react-three/fiber'
-import { Torus, Box, Sphere, Cylinder, Float, Stars } from '@react-three/drei'
+import { useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import * as THREE from 'three'
-import { ChevronDown, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
+import * as THREE from 'three'
 
-function BikeModel() {
-  const groupRef = useRef<THREE.Group>(null)
+function WheelCanvas() {
+  const mountRef = useRef<HTMLDivElement>(null)
 
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.3
-      groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1
+  useEffect(() => {
+    if (!mountRef.current) return
+    const mount = mountRef.current
+    const width = mount.clientWidth
+    const height = mount.clientHeight
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    renderer.setSize(width, height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setClearColor(0x000000, 0)
+    mount.appendChild(renderer.domElement)
+
+    // Scene & Camera
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000)
+    camera.position.set(0, 0, 7)
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5))
+    const orangeLight = new THREE.PointLight(0xFF4D00, 2, 30)
+    orangeLight.position.set(3, 3, 4)
+    scene.add(orangeLight)
+    const tealLight = new THREE.PointLight(0x00D4AA, 1, 30)
+    tealLight.position.set(-4, -2, -3)
+    scene.add(tealLight)
+
+    // Wheel group
+    const wheelGroup = new THREE.Group()
+    scene.add(wheelGroup)
+
+    // Outer tire
+    const tireMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.3, roughness: 0.7 })
+    const tireGeo = new THREE.TorusGeometry(2.2, 0.22, 20, 80)
+    wheelGroup.add(new THREE.Mesh(tireGeo, tireMat))
+
+    // Rim
+    const rimMat = new THREE.MeshStandardMaterial({ color: 0xFF4D00, metalness: 0.8, roughness: 0.2 })
+    const rimGeo = new THREE.TorusGeometry(2.05, 0.07, 16, 80)
+    wheelGroup.add(new THREE.Mesh(rimGeo, rimMat))
+
+    // Inner rim ring
+    const innerRimMat = new THREE.MeshStandardMaterial({ color: 0xFF6B30, metalness: 0.7, roughness: 0.3 })
+    const innerRimGeo = new THREE.TorusGeometry(1.7, 0.04, 12, 80)
+    wheelGroup.add(new THREE.Mesh(innerRimGeo, innerRimMat))
+
+    // Hub
+    const hubMat = new THREE.MeshStandardMaterial({ color: 0xFF4D00, metalness: 0.9, roughness: 0.1 })
+    const hubGeo = new THREE.SphereGeometry(0.18, 16, 16)
+    wheelGroup.add(new THREE.Mesh(hubGeo, hubMat))
+
+    // 16 spokes
+    const spokeMat = new THREE.MeshStandardMaterial({ color: 0xFF8C42, metalness: 0.6, roughness: 0.4 })
+    const spokeCount = 16
+    for (let i = 0; i < spokeCount; i++) {
+      const angle = (i / spokeCount) * Math.PI * 2
+      const spokeGeo = new THREE.CylinderGeometry(0.018, 0.018, 1.85, 6)
+      const spoke = new THREE.Mesh(spokeGeo, spokeMat)
+      // Position at midpoint between hub and inner rim (~0.92 from center)
+      spoke.position.x = Math.cos(angle) * 0.92
+      spoke.position.y = Math.sin(angle) * 0.92
+      // Rotate so the cylinder points radially outward
+      spoke.rotation.z = angle + Math.PI / 2
+      wheelGroup.add(spoke)
     }
-  })
 
-  return (
-    <group ref={groupRef} scale={1.5}>
-      {/* Front wheel */}
-      <Torus args={[1, 0.08, 8, 32]} position={[1.5, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <meshStandardMaterial color="#FF4D00" wireframe />
-      </Torus>
-      {/* Front wheel spokes */}
-      <Torus args={[0.6, 0.03, 4, 16]} position={[1.5, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <meshStandardMaterial color="#FF6B30" wireframe />
-      </Torus>
-      {/* Rear wheel */}
-      <Torus args={[1, 0.08, 8, 32]} position={[-1.5, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <meshStandardMaterial color="#FF4D00" wireframe />
-      </Torus>
-      {/* Rear wheel spokes */}
-      <Torus args={[0.6, 0.03, 4, 16]} position={[-1.5, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <meshStandardMaterial color="#FF6B30" wireframe />
-      </Torus>
-      {/* Frame - main tube top */}
-      <Box args={[3.2, 0.08, 0.08]} position={[0, 0.5, 0]}>
-        <meshStandardMaterial color="#FF8C42" />
-      </Box>
-      {/* Frame - down tube */}
-      <Box args={[2.2, 0.08, 0.08]} position={[0.3, -0.2, 0]} rotation={[0, 0, -0.4]}>
-        <meshStandardMaterial color="#FF8C42" />
-      </Box>
-      {/* Seat tube */}
-      <Cylinder args={[0.05, 0.05, 1.3, 8]} position={[-0.5, 0.2, 0]} rotation={[0, 0, 0.15]}>
-        <meshStandardMaterial color="#FF8C42" />
-      </Cylinder>
-      {/* Fork */}
-      <Cylinder args={[0.05, 0.05, 1.3, 8]} position={[1.3, 0.1, 0]} rotation={[0, 0, -0.25]}>
-        <meshStandardMaterial color="#FF8C42" />
-      </Cylinder>
-      {/* Chain stay */}
-      <Box args={[2.0, 0.06, 0.06]} position={[0, -0.9, 0]}>
-        <meshStandardMaterial color="#FF8C42" />
-      </Box>
-      {/* Handlebars */}
-      <Box args={[0.7, 0.08, 0.08]} position={[1.55, 1.1, 0]}>
-        <meshStandardMaterial color="#00D4AA" />
-      </Box>
-      {/* Stem */}
-      <Cylinder args={[0.04, 0.04, 0.6, 8]} position={[1.5, 0.8, 0]}>
-        <meshStandardMaterial color="#00D4AA" />
-      </Cylinder>
-      {/* Saddle */}
-      <Box args={[0.55, 0.06, 0.18]} position={[-0.75, 1.35, 0]}>
-        <meshStandardMaterial color="#00D4AA" />
-      </Box>
-      {/* Seat post */}
-      <Cylinder args={[0.04, 0.04, 0.5, 8]} position={[-0.7, 1.05, 0]}>
-        <meshStandardMaterial color="#00D4AA" />
-      </Cylinder>
-      {/* Pedal crank */}
-      <Sphere args={[0.12, 8, 8]} position={[-0.1, -0.9, 0]}>
-        <meshStandardMaterial color="#FF4D00" emissive="#FF4D00" emissiveIntensity={0.3} />
-      </Sphere>
-    </group>
-  )
-}
-
-function FloatingParticle({ position }: { position: [number, number, number] }) {
-  const ref = useRef<THREE.Mesh>(null)
-  const speed = 0.3 + Math.random() * 0.5
-  const offset = Math.random() * Math.PI * 2
-
-  useFrame((state) => {
-    if (ref.current) {
-      ref.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed + offset) * 0.3
-      ref.current.rotation.x = state.clock.elapsedTime * 0.5
-      ref.current.rotation.z = state.clock.elapsedTime * 0.3
+    // Animation loop
+    let animId: number
+    let t = 0
+    const animate = () => {
+      animId = requestAnimationFrame(animate)
+      t += 0.016
+      // Spin on Z axis like a real wheel
+      wheelGroup.rotation.z -= 0.005
+      // Subtle Y oscillation for 3D perspective feel
+      wheelGroup.rotation.y = Math.sin(t * 0.4) * 0.25
+      renderer.render(scene, camera)
     }
-  })
+    animate()
 
-  return (
-    <mesh ref={ref} position={position}>
-      <octahedronGeometry args={[0.05, 0]} />
-      <meshStandardMaterial color="#FF4D00" emissive="#FF4D00" emissiveIntensity={0.8} />
-    </mesh>
-  )
-}
+    // Resize handler
+    const handleResize = () => {
+      const w = mount.clientWidth
+      const h = mount.clientHeight
+      camera.aspect = w / h
+      camera.updateProjectionMatrix()
+      renderer.setSize(w, h)
+    }
+    window.addEventListener('resize', handleResize)
 
-function Scene() {
-  const particles: [number, number, number][] = [
-    [-4, 2, -2], [4, -1, -3], [-3, -2, -1], [5, 2, -2],
-    [-5, 1, -4], [3, 3, -3], [-2, -3, -2], [4, -2, -4],
-    [0, 3, -3], [-4, 0, -3],
-  ]
+    return () => {
+      cancelAnimationFrame(animId)
+      window.removeEventListener('resize', handleResize)
+      renderer.dispose()
+      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement)
+    }
+  }, [])
 
-  return (
-    <>
-      <ambientLight intensity={0.3} />
-      <pointLight position={[5, 5, 5]} intensity={1.5} color="#FF4D00" />
-      <pointLight position={[-5, -5, -5]} intensity={0.8} color="#00D4AA" />
-      <pointLight position={[0, 0, 5]} intensity={0.5} color="#ffffff" />
-      <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={0.5} />
-      <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
-        <BikeModel />
-      </Float>
-      {particles.map((pos, i) => (
-        <FloatingParticle key={i} position={pos} />
-      ))}
-    </>
-  )
-}
-
-function HeroCanvas() {
-  return (
-    <Canvas
-      camera={{ position: [0, 0, 6], fov: 50 }}
-      className="absolute inset-0"
-      dpr={[1, 2]}
-    >
-      <Suspense fallback={null}>
-        <Scene />
-      </Suspense>
-    </Canvas>
-  )
+  return <div ref={mountRef} className="absolute inset-0" />
 }
 
 const stats = [
-  { value: '847', label: 'Active Listings' },
+  { value: '847', label: 'Active listings' },
   { value: '12', label: 'Cities' },
-  { value: '43', label: 'Expert Mechanics' },
-  { value: '1,200+', label: 'Happy Renters' },
+  { value: '43', label: 'Mechanics' },
+  { value: '1,200+', label: 'Happy renters' },
 ]
 
 export function HeroSection() {
   const locale = useLocale()
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-secondary-500">
-      {/* 3D Canvas Background */}
-      <div className="absolute inset-0 z-0">
-        <HeroCanvas />
-        {/* Dark overlay for text readability - reduced opacity to show 3D bike more */}
-        <div className="absolute inset-0 bg-gradient-to-r from-secondary-900/75 via-secondary-900/40 to-secondary-900/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-secondary-900/80 via-transparent to-secondary-900/40" />
-      </div>
+    <section className="relative min-h-screen bg-[#0A0A0A] flex items-center overflow-hidden">
+      {/* Subtle radial glow behind wheel */}
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[50%] h-[80%] bg-primary-500/8 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
-        <div className="max-w-3xl">
-          {/* Floating badge */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-8"
-          >
-            <span className="text-lg">🇪🇸</span>
-            <span className="text-white/90 text-sm font-medium">Costa del Sol</span>
-            <span className="w-2 h-2 rounded-full bg-accent-400 animate-pulse" />
-            <span className="text-accent-400 text-sm">Live marketplace</span>
-          </motion.div>
+      <div className="relative z-10 w-full container mx-auto px-6 lg:px-8">
+        <div className="flex items-center gap-8 min-h-screen">
 
-          {/* Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6"
-          >
-            Find Your{' '}
-            <span className="relative inline-block">
-              <span className="text-primary-400">Perfect Bike</span>
-              <motion.span
-                className="absolute -bottom-1 left-0 h-1 bg-gradient-to-r from-primary-500 to-primary-300 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: '100%' }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-              />
-            </span>
-            {' '}in{' '}
-            <span className="text-accent-400">Costa del Sol</span>
-          </motion.h1>
-
-          {/* Subheading */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="text-xl text-white/70 mb-10 max-w-2xl leading-relaxed"
-          >
-            The premier cycling marketplace for the Costa del Sol. Buy, sell, rent, and service bikes with verified local sellers and expert mechanics across 12 cities.
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-            className="flex flex-wrap gap-4 mb-16"
-          >
-            <Link
-              href={`/${locale}/listings`}
-              className="group flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white font-bold px-8 py-4 rounded-2xl text-lg transition-all duration-200 shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 hover:scale-105"
+          {/* Left: text content */}
+          <div className="flex-1 max-w-2xl pt-20 pb-16">
+            {/* Location badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 border border-white/15 rounded-full px-4 py-1.5 mb-8"
             >
-              Browse Bikes
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              href={`/${locale}/sell`}
-              className="flex items-center gap-2 border-2 border-white/30 hover:border-white/60 text-white font-bold px-8 py-4 rounded-2xl text-lg transition-all duration-200 hover:bg-white/10 backdrop-blur-sm"
-            >
-              Sell Your Bike
-            </Link>
-            <Link
-              href={`/${locale}/rentals`}
-              className="flex items-center gap-2 text-accent-400 hover:text-accent-300 font-bold px-8 py-4 rounded-2xl text-lg transition-all duration-200 hover:bg-accent-400/10"
-            >
-              Rent a Bike →
-            </Link>
-          </motion.div>
+              <span className="w-2 h-2 rounded-full bg-accent-400 animate-pulse" />
+              <span className="text-white/60 text-sm tracking-wide">Costa del Sol, Spain</span>
+            </motion.div>
 
-          {/* Stats bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.7 }}
-            className="flex flex-wrap gap-8"
-          >
-            {stats.map((stat, i) => (
-              <div key={i} className="flex flex-col">
-                <span className="text-3xl font-bold text-white">{stat.value}</span>
-                <span className="text-white/50 text-sm">{stat.label}</span>
-              </div>
-            ))}
-          </motion.div>
+            {/* Headline - very large */}
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="text-6xl sm:text-7xl lg:text-8xl font-black text-white leading-[0.95] tracking-tight mb-6"
+            >
+              Buy.<br />
+              <span className="text-primary-500">Sell.</span><br />
+              Ride.
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="text-white/50 text-xl leading-relaxed mb-10 max-w-lg"
+            >
+              Costa del Sol&apos;s premier cycling marketplace. Buy, sell, rent and service bikes — locally, safely, simply.
+            </motion.p>
+
+            {/* CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="flex flex-wrap gap-3 mb-14"
+            >
+              <Link
+                href={`/${locale}/listings`}
+                className="flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white font-bold px-7 py-3.5 rounded-xl text-base transition-all hover:scale-105 shadow-lg shadow-primary-500/25"
+              >
+                Browse Bikes <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href={`/${locale}/sell`}
+                className="flex items-center gap-2 border border-white/20 hover:border-white/40 text-white font-semibold px-7 py-3.5 rounded-xl text-base transition-all hover:bg-white/5"
+              >
+                Sell Your Bike
+              </Link>
+            </motion.div>
+
+            {/* Stats row */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="flex gap-8 border-t border-white/10 pt-8"
+            >
+              {stats.map((s, i) => (
+                <div key={i}>
+                  <div className="text-2xl font-black text-white">{s.value}</div>
+                  <div className="text-white/40 text-xs mt-0.5">{s.label}</div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Right: 3D Wheel */}
+          <div className="hidden lg:block flex-shrink-0 w-[45%] h-screen relative">
+            <WheelCanvas />
+          </div>
+
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/40"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-      >
-        <span className="text-xs uppercase tracking-widest">Scroll</span>
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <ChevronDown className="w-5 h-5" />
-        </motion.div>
-      </motion.div>
-
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-secondary-900 to-transparent z-5" />
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0A0A0A] to-transparent z-10" />
     </section>
   )
 }
