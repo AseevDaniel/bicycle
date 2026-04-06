@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { Search, MapPin, SlidersHorizontal, X, ChevronDown, ChevronUp } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { MapListing } from './ListingPopup'
-import { TYPE_COLORS } from './MapView'
+import { TYPE_COLORS } from './mapConstants'
 import { clsx } from 'clsx'
 
 const BIKE_TYPES = ['all', 'road', 'mountain', 'gravel', 'electric', 'city', 'hybrid']

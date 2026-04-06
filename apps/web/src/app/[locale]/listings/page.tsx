@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -437,7 +438,7 @@ function CardSkeleton() {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function ListingsPage() {
+function ListingsPageInner() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -808,6 +809,14 @@ export default function ListingsPage() {
         )}
       </AnimatePresence>
     </div>
+  )
+}
+
+export default function ListingsPage() {
+  return (
+    <Suspense>
+      <ListingsPageInner />
+    </Suspense>
   )
 }
 

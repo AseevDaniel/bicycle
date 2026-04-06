@@ -7,6 +7,9 @@ import 'leaflet/dist/leaflet.css'
 import { createRoot } from 'react-dom/client'
 import type { MapListing } from './ListingPopup'
 import { ListingPopup } from './ListingPopup'
+import { TYPE_COLORS } from './mapConstants'
+
+export { TYPE_COLORS }
 
 // Fix Leaflet default icon paths broken by webpack/next.js
 if (typeof window !== 'undefined') {
@@ -17,16 +20,6 @@ if (typeof window !== 'undefined') {
     iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
     shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
   })
-}
-
-export const TYPE_COLORS: Record<string, string> = {
-  road: '#3B82F6',
-  mountain: '#22C55E',
-  gravel: '#A855F7',
-  electric: '#EAB308',
-  city: '#6B7280',
-  hybrid: '#14B8A6',
-  default: '#FF4D00',
 }
 
 function createCustomIcon(color: string, isSelected = false) {
