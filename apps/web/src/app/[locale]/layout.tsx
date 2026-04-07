@@ -61,6 +61,17 @@ export default async function LocaleLayout({
       <body
         className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased`}
       >
+        {/* Runs synchronously before any React HTML is painted — prevents white flash */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function(){
+            var ol=document.createElement('div');
+            ol.id='init-overlay';
+            ol.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#0A0A0A;transition:opacity 0.5s';
+            document.body.appendChild(ol);
+            window.__ot=setTimeout(function(){ol.style.opacity='0';setTimeout(function(){ol.remove();},500);},600);
+          })();
+        ` }} />
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             <AuthProvider>

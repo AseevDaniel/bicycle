@@ -92,9 +92,15 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
     rim.position.set(3, 1, -5)
     scene.add(rim)
 
-    // ── Model group ───────────────────────────────────────────────────────────
+    // ── Groups: baseGroup holds fixed angle, modelGroup gets mouse parallax ──────
+    // baseGroup: fixed presentation angle — show bike from the right-front (~25°)
+    const baseGroup = new THREE.Group()
+    baseGroup.rotation.y = 0.45   // ≈25° right-front view
+    scene.add(baseGroup)
+
+    // modelGroup: child of baseGroup — only mouse/idle parallax applied here
     const modelGroup = new THREE.Group()
-    scene.add(modelGroup)
+    baseGroup.add(modelGroup)
 
     // ── Load GLTF ─────────────────────────────────────────────────────────────
     const loader = new GLTFLoader()
@@ -119,29 +125,23 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
       undefined,
       (err) => {
         console.error('GLTF load error:', err)
-        // Fallback: simple wheel so something shows
         const fb = new THREE.Mesh(
           new THREE.TorusGeometry(1.2, 0.1, 12, 48),
           new THREE.MeshStandardMaterial({ color: 0xFF4D00, metalness: 0.5, roughness: 0.3 })
         )
-        fb.rotation.y = Math.PI / 2
         modelGroup.add(fb)
         onLoaded()
       }
     )
 
-    // ── Mouse parallax ────────────────────────────────────────────────────────
-    let targetY = 0.12
-    let targetX = 0.04
-    let curY = 0.12
-    let curX = 0.04
-    let lastMove = 0
+    // ── Mouse parallax (small offsets around base angle) ──────────────────────
+    let targetY = 0, targetX = 0, curY = 0, curX = 0, lastMove = 0
 
     const onMouseMove = (e: MouseEvent) => {
       const nx = e.clientX / window.innerWidth - 0.5   // -0.5 … +0.5
       const ny = e.clientY / window.innerHeight - 0.5
-      targetY = nx * 0.38    // mouse right → bike turns right
-      targetX = ny * 0.12    // mouse down  → bike tilts forward
+      targetY = nx * 0.30    // ±0.15 rad around base angle
+      targetX = ny * 0.10
       lastMove = Date.now()
     }
     window.addEventListener('mousemove', onMouseMove)
@@ -153,18 +153,16 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
       animId = requestAnimationFrame(animate)
       t += 0.016
 
-      // Idle gentle sway when mouse hasn't moved for 2 s
       if (Date.now() - lastMove > 2000) {
-        targetY = Math.sin(t * 0.22) * 0.14
-        targetX = Math.sin(t * 0.15) * 0.04
+        targetY = Math.sin(t * 0.22) * 0.10
+        targetX = Math.sin(t * 0.15) * 0.03
       }
 
-      // Smooth spring — 0.022 = noticeably slower & softer than 0.04
       curY += (targetY - curY) * 0.022
       curX += (targetX - curX) * 0.022
       modelGroup.rotation.y = curY
       modelGroup.rotation.x = curX
-      modelGroup.position.y = Math.sin(t * 0.38) * 0.07
+      baseGroup.position.y = Math.sin(t * 0.38) * 0.07  // gentle float
 
       renderer.render(scene, camera)
     }
@@ -206,32 +204,33 @@ const stats = [
 export function HeroSection() {
   const locale = useLocale()
   const [loaded, setLoaded] = useState(false)
-  const [hideLoader, setHideLoader] = useState(false)
+  const [hideSpinner, setHideSpinner] = useState(false)
 
-  // When model is ready: start fade-out, then unmount loader
+  // Cancel layout overlay auto-remove — we dismiss it ourselves when model is ready
+  useEffect(() => {
+    const w = window as typeof window & { __ot?: ReturnType<typeof setTimeout> }
+    if (w.__ot) { clearTimeout(w.__ot); w.__ot = undefined }
+  }, [])
+
   const handleLoaded = () => {
     setLoaded(true)
-    setTimeout(() => setHideLoader(true), 750)   // remove after transition
+    // Fade out + remove the layout-level plain overlay
+    const ol = document.getElementById('init-overlay')
+    if (ol) { ol.style.opacity = '0'; setTimeout(() => ol.remove(), 600) }
+    // Unmount the React spinner overlay after transition
+    setTimeout(() => setHideSpinner(true), 750)
   }
 
   return (
     <section className="relative min-h-screen bg-[#0A0A0A] flex items-center overflow-hidden">
-      {/* ── Full-page loading overlay (inline styles = works before Tailwind CSS loads) */}
-      {!hideLoader && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            background: '#0A0A0A',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            opacity: loaded ? 0 : 1,
-            transition: 'opacity 0.7s',
-            pointerEvents: 'none',
-          }}
-        >
+      {/* React spinner overlay — inline styles so it works even if Tailwind loads late */}
+      {!hideSpinner && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9998,
+          background: '#0A0A0A',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          opacity: loaded ? 0 : 1, transition: 'opacity 0.7s', pointerEvents: 'none',
+        }}>
           <BikeWheelLoader />
         </div>
       )}
