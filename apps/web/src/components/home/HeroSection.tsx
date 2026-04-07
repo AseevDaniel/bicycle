@@ -70,8 +70,8 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
     // ── Scene & Camera ────────────────────────────────────────────────────────
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(45, mount.clientWidth / mount.clientHeight, 0.1, 100)
-    camera.position.set(0, 1.5, 9)
-    camera.lookAt(0, 0.5, 0)
+    camera.position.set(0, 3.5, 9)   // higher = slight top-down view
+    camera.lookAt(0, 0.3, 0)
 
     // ── Lighting ──────────────────────────────────────────────────────────────
     // Bright ambient base so the model is never in darkness
@@ -93,9 +93,9 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
     scene.add(rim)
 
     // ── Groups: baseGroup holds fixed angle, modelGroup gets mouse parallax ──────
-    // baseGroup: fixed presentation angle — show bike from the right-front (~25°)
+    // baseGroup: fixed presentation angle — 40° to the LEFT (negative Y = left)
     const baseGroup = new THREE.Group()
-    baseGroup.rotation.y = 0.45   // ≈25° right-front view
+    baseGroup.rotation.y = -0.70   // ≈ -40° left-front view
     scene.add(baseGroup)
 
     // modelGroup: child of baseGroup — only mouse/idle parallax applied here
@@ -112,7 +112,7 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
         const box = new THREE.Box3().setFromObject(model)
         const size = box.getSize(new THREE.Vector3())
         const center = box.getCenter(new THREE.Vector3())
-        const scale = 5.0 / Math.max(size.x, size.y, size.z)
+        const scale = 6.5 / Math.max(size.x, size.y, size.z)
         model.scale.setScalar(scale)
         model.position.set(
           -center.x * scale,
@@ -120,7 +120,12 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
           -center.z * scale,
         )
         modelGroup.add(model)
-        onLoaded()
+        // Render two frames first so the model is fully on-screen before overlay fades
+        renderer.render(scene, camera)
+        requestAnimationFrame(() => {
+          renderer.render(scene, camera)
+          requestAnimationFrame(() => onLoaded())
+        })
       },
       undefined,
       (err) => {
