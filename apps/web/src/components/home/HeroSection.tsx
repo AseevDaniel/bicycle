@@ -210,11 +210,25 @@ export function HeroSection() {
   const locale = useLocale()
   const [loaded, setLoaded] = useState(false)
   const [hideSpinner, setHideSpinner] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
 
   // Cancel layout overlay auto-remove — we dismiss it ourselves when model is ready
   useEffect(() => {
     const w = window as typeof window & { __ot?: ReturnType<typeof setTimeout> }
     if (w.__ot) { clearTimeout(w.__ot); w.__ot = undefined }
+  }, [])
+
+  // On mobile skip 3D entirely — detect once on mount
+  useEffect(() => {
+    const desktop = window.innerWidth >= 1024
+    setIsDesktop(desktop)
+    if (!desktop) {
+      // No 3D on mobile: mark as loaded immediately so spinner disappears
+      setLoaded(true)
+      const ol = document.getElementById('init-overlay')
+      if (ol) { ol.style.opacity = '0'; setTimeout(() => { ol.style.display = 'none' }, 600) }
+      setTimeout(() => setHideSpinner(true), 750)
+    }
   }, [])
 
   const handleLoaded = () => {
@@ -321,16 +335,18 @@ export function HeroSection() {
             </motion.div>
           </div>
 
-          {/* ── Right: 3D model ───────────────────────────────────────────── */}
-          <div
-            className="hidden lg:block flex-shrink-0 w-[48%] h-[85vh] relative
-                       transition-opacity duration-1000"
-            style={{ opacity: loaded ? 1 : 0 }}
-          >
-            <BikeModelCanvas onLoaded={handleLoaded} />
-            <div className="absolute bottom-0 left-0 right-0 h-32
-                            bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none" />
-          </div>
+          {/* ── Right: 3D model — desktop only, not mounted on mobile ─────── */}
+          {isDesktop && (
+            <div
+              className="hidden lg:block flex-shrink-0 w-[48%] h-[85vh] relative
+                         transition-opacity duration-1000"
+              style={{ opacity: loaded ? 1 : 0 }}
+            >
+              <BikeModelCanvas onLoaded={handleLoaded} />
+              <div className="absolute bottom-0 left-0 right-0 h-32
+                              bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none" />
+            </div>
+          )}
 
         </div>
       </div>
