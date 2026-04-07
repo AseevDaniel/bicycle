@@ -62,11 +62,9 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     renderer.setSize(mount.clientWidth, mount.clientHeight)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 0.85          // less blown-out than 1.2
+    renderer.toneMappingExposure = 1.1
     mount.appendChild(renderer.domElement)
 
     // ── Scene & Camera ────────────────────────────────────────────────────────
@@ -76,32 +74,23 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
     camera.lookAt(0, 0.5, 0)
 
     // ── Lighting ──────────────────────────────────────────────────────────────
-    // Natural sky/ground base — replaces flat AmbientLight
-    scene.add(new THREE.HemisphereLight(0xddeeff, 0x111122, 0.65))
+    // Bright ambient base so the model is never in darkness
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xaabbcc, 3.0))
 
-    // Key light — warm, front-left-high, casts shadows
-    const key = new THREE.DirectionalLight(0xffffff, 1.4)
-    key.position.set(-3, 6, 8)
-    key.castShadow = true
-    key.shadow.mapSize.set(1024, 1024)
-    key.shadow.camera.near = 0.5
-    key.shadow.camera.far = 30
+    // Key light — front-above, strong
+    const key = new THREE.DirectionalLight(0xffffff, 3.5)
+    key.position.set(-2, 5, 6)
     scene.add(key)
 
-    // Rim / separation light — subtle orange from behind-right
-    const rim = new THREE.DirectionalLight(0xFF7744, 0.55)
-    rim.position.set(5, 1, -6)
-    scene.add(rim)
+    // Fill light — front-right to even out shadows
+    const fill = new THREE.DirectionalLight(0xddeeff, 2.0)
+    fill.position.set(5, 2, 4)
+    scene.add(fill)
 
-    // ── Ground shadow catcher ─────────────────────────────────────────────────
-    const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(20, 20),
-      new THREE.ShadowMaterial({ opacity: 0.25 })
-    )
-    ground.rotation.x = -Math.PI / 2
-    ground.position.y = -1.5
-    ground.receiveShadow = true
-    scene.add(ground)
+    // Rim / separation light — subtle orange from behind
+    const rim = new THREE.DirectionalLight(0xFF8844, 1.2)
+    rim.position.set(3, 1, -5)
+    scene.add(rim)
 
     // ── Model group ───────────────────────────────────────────────────────────
     const modelGroup = new THREE.Group()
@@ -113,17 +102,11 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
       '/bicycle/models/bmx_bike/scene.gltf',
       (gltf) => {
         const model = gltf.scene
-        model.traverse((child) => {
-          if ((child as THREE.Mesh).isMesh) {
-            child.castShadow = true
-            child.receiveShadow = true
-          }
-        })
         // Auto-scale & center
         const box = new THREE.Box3().setFromObject(model)
         const size = box.getSize(new THREE.Vector3())
         const center = box.getCenter(new THREE.Vector3())
-        const scale = 3.5 / Math.max(size.x, size.y, size.z)
+        const scale = 5.0 / Math.max(size.x, size.y, size.z)
         model.scale.setScalar(scale)
         model.position.set(
           -center.x * scale,
@@ -157,8 +140,8 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
     const onMouseMove = (e: MouseEvent) => {
       const nx = e.clientX / window.innerWidth - 0.5   // -0.5 … +0.5
       const ny = e.clientY / window.innerHeight - 0.5
-      targetY = -nx * 0.38    // ±0.19 rad  (was 0.9 — too much)
-      targetX =  ny * 0.12    // ±0.06 rad  (was 0.25 — too much)
+      targetY =  nx * 0.38    // mouse right → bike turns right
+      targetX = -ny * 0.12    // mouse up   → bike tilts back
       lastMove = Date.now()
     }
     window.addEventListener('mousemove', onMouseMove)
