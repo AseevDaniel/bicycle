@@ -79,7 +79,7 @@ export default async function LocaleLayout({
         <script dangerouslySetInnerHTML={{ __html:
           `window.__ot=setTimeout(function(){` +
           `var o=document.getElementById('init-overlay');` +
-          `if(o){o.style.opacity='0';setTimeout(function(){o.remove();},500);}` +
+          `if(o){o.style.opacity='0';setTimeout(function(){o.style.display='none';},500);}` +
           `},400);`
         }} />
         <NextIntlClientProvider messages={messages}>
