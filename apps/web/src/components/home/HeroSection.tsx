@@ -69,8 +69,8 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
 
     // ── Scene & Camera ────────────────────────────────────────────────────────
     const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(40, mount.clientWidth / mount.clientHeight, 0.1, 100)
-    camera.position.set(3.5, 1.8, 5)
+    const camera = new THREE.PerspectiveCamera(45, mount.clientWidth / mount.clientHeight, 0.1, 100)
+    camera.position.set(0, 1.5, 9)
     camera.lookAt(0, 0.5, 0)
 
     // ── Lighting ──────────────────────────────────────────────────────────────
@@ -140,8 +140,8 @@ function BikeModelCanvas({ onLoaded }: { onLoaded: () => void }) {
     const onMouseMove = (e: MouseEvent) => {
       const nx = e.clientX / window.innerWidth - 0.5   // -0.5 … +0.5
       const ny = e.clientY / window.innerHeight - 0.5
-      targetY =  nx * 0.38    // mouse right → bike turns right
-      targetX = -ny * 0.12    // mouse up   → bike tilts back
+      targetY = nx * 0.38    // mouse right → bike turns right
+      targetX = ny * 0.12    // mouse down  → bike tilts forward
       lastMove = Date.now()
     }
     window.addEventListener('mousemove', onMouseMove)
@@ -216,12 +216,21 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-screen bg-[#0A0A0A] flex items-center overflow-hidden">
-      {/* ── Full-page loading overlay ─────────────────────────────────────── */}
+      {/* ── Full-page loading overlay (inline styles = works before Tailwind CSS loads) */}
       {!hideLoader && (
         <div
-          className="fixed inset-0 z-[9999] bg-[#0A0A0A] flex items-center justify-center
-                     transition-opacity duration-700 pointer-events-none"
-          style={{ opacity: loaded ? 0 : 1 }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: '#0A0A0A',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: loaded ? 0 : 1,
+            transition: 'opacity 0.7s',
+            pointerEvents: 'none',
+          }}
         >
           <BikeWheelLoader />
         </div>
