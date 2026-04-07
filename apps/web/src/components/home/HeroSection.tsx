@@ -211,19 +211,18 @@ export function HeroSection() {
   const [loaded, setLoaded] = useState(false)
   const [hideSpinner, setHideSpinner] = useState(false)
 
-  // Cancel layout overlay auto-remove — we dismiss it ourselves when model is ready
+  // Cancel auto-reveal timer — we control it ourselves after GLTF loads
   useEffect(() => {
-    const w = window as typeof window & { __ot?: ReturnType<typeof setTimeout> }
-    if (w.__ot) { clearTimeout(w.__ot); w.__ot = undefined }
+    const w = window as typeof window & { __bmrt?: ReturnType<typeof setTimeout> }
+    if (w.__bmrt) { clearTimeout(w.__bmrt); w.__bmrt = undefined }
   }, [])
 
   const handleLoaded = () => {
     setLoaded(true)
-    // Fade out + remove the layout-level plain overlay
-    const ol = document.getElementById('init-overlay')
-    if (ol) { ol.style.opacity = '0'; setTimeout(() => ol.remove(), 600) }
-    // Unmount the React spinner overlay after transition
-    setTimeout(() => setHideSpinner(true), 750)
+    // Fade out CSS overlay (html::before via class)
+    document.documentElement.classList.add('bm-ready')
+    // Unmount React spinner after CSS fade completes
+    setTimeout(() => setHideSpinner(true), 650)
   }
 
   return (
@@ -322,11 +321,7 @@ export function HeroSection() {
           </div>
 
           {/* ── Right: 3D model ───────────────────────────────────────────── */}
-          <div
-            className="hidden lg:block flex-shrink-0 w-[48%] h-[85vh] relative
-                       transition-opacity duration-1000"
-            style={{ opacity: loaded ? 1 : 0 }}
-          >
+          <div className="hidden lg:block flex-shrink-0 w-[48%] h-[85vh] relative">
             <BikeModelCanvas onLoaded={handleLoaded} />
             <div className="absolute bottom-0 left-0 right-0 h-32
                             bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none" />

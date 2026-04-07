@@ -58,30 +58,15 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        {/* Auto-reveal on non-hero pages. HeroSection cancels this and reveals after GLTF loads. */}
+        <script dangerouslySetInnerHTML={{ __html:
+          `window.__bmrt=setTimeout(function(){document.documentElement.classList.add('bm-ready');},350);`
+        }} />
+      </head>
       <body
         className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased`}
       >
-        {/*
-          This div IS in the server-rendered HTML — visible from the very first paint.
-          JS dynamically created overlays only appear AFTER first paint (too late).
-          Script below auto-removes it on non-hero pages; HeroSection controls it on hero page.
-        */}
-        <div
-          id="init-overlay"
-          style={{
-            position: 'fixed',
-            top: 0, left: 0, right: 0, bottom: 0,
-            zIndex: 99999,
-            background: '#0A0A0A',
-            transition: 'opacity 0.5s',
-          } as React.CSSProperties}
-        />
-        <script dangerouslySetInnerHTML={{ __html:
-          `window.__ot=setTimeout(function(){` +
-          `var o=document.getElementById('init-overlay');` +
-          `if(o){o.style.opacity='0';setTimeout(function(){o.remove();},500);}` +
-          `},400);`
-        }} />
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             <AuthProvider>

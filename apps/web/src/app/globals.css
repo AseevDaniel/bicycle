@@ -52,6 +52,27 @@
   }
 }
 
+/* ── Page-load overlay ────────────────────────────────────────────────────────
+   CSS pseudo-element = exists from the very first CSS paint, zero DOM nodes,
+   no React hydration conflict. Controlled by adding class 'bm-ready' to <html>.
+   ────────────────────────────────────────────────────────────────────────── */
+html::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0A0A0A;
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.55s ease;
+}
+html.bm-ready::before {
+  opacity: 0;
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
