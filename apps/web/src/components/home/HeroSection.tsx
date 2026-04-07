@@ -221,7 +221,7 @@ export function HeroSection() {
     setLoaded(true)
     // Fade out + remove the layout-level plain overlay
     const ol = document.getElementById('init-overlay')
-    if (ol) { ol.style.opacity = '0'; setTimeout(() => ol.remove(), 600) }
+    if (ol) { ol.style.opacity = '0'; setTimeout(() => { ol.style.display = 'none' }, 600) }
     // Unmount the React spinner overlay after transition
     setTimeout(() => setHideSpinner(true), 750)
   }
