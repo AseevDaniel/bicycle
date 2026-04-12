@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    container_name: bicimarket_postgres
+    environment:
+      POSTGRES_DB: bicimarket
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: bicimarket_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.11
+    container_name: bicimarket_meilisearch
+    environment:
+      MEILI_MASTER_KEY: masterKey
+      MEILI_ENV: development
+    ports:
+      - "7700:7700"
+    volumes:
+      - meilisearch_data:/meili_data
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: bicimarket_mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  postgres_data:
+  redis_data:
+  meilisearch_data:

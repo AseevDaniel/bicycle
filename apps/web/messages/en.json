@@ -1,0 +1,149 @@
+{
+  "nav": {
+    "buy": "Buy a Bike",
+    "sell": "Sell a Bike",
+    "rent": "Rent a Bike",
+    "repair": "Repair",
+    "map": "Map View",
+    "messages": "Messages",
+    "profile": "Profile",
+    "login": "Log In",
+    "signup": "Sign Up",
+    "logout": "Log Out"
+  },
+  "home": {
+    "hero": {
+      "title": "Find Your Perfect Bike in",
+      "titleHighlight": "Costa del Sol",
+      "subtitle": "The premier bicycle marketplace for cyclists, tourists, and expats. Buy, sell, rent, or get your bike repaired.",
+      "ctaBuy": "Browse Bikes",
+      "ctaSell": "Sell Your Bike",
+      "ctaRent": "Rent a Bike",
+      "stats": {
+        "listings": "Active Listings",
+        "cities": "Cities",
+        "mechanics": "Mechanics",
+        "renters": "Happy Renters"
+      }
+    },
+    "categories": {
+      "title": "Browse by Category",
+      "subtitle": "Find exactly what you're looking for"
+    },
+    "featured": {
+      "title": "Featured Bikes",
+      "subtitle": "Hand-picked quality listings",
+      "viewAll": "View All"
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "sell": {
+        "title": "Sell Your Bike",
+        "steps": ["Take photos", "List in minutes", "Get paid safely"]
+      },
+      "buy": {
+        "title": "Buy a Bike",
+        "steps": ["Browse & filter", "Contact seller", "Meet & ride"]
+      },
+      "rent": {
+        "title": "Rent a Bike",
+        "steps": ["Choose dates", "Book online", "Pick up & ride"]
+      }
+    },
+    "trust": {
+      "title": "Safe & Trusted",
+      "verified": "Verified Sellers",
+      "reviews": "Honest Reviews",
+      "secure": "Secure Transactions",
+      "support": "Local Support"
+    }
+  },
+  "listings": {
+    "title": "Bikes for Sale",
+    "subtitle": "Find your perfect ride in Costa del Sol",
+    "filters": {
+      "type": "Bike Type",
+      "price": "Price Range",
+      "condition": "Condition",
+      "brand": "Brand",
+      "location": "Location",
+      "sortBy": "Sort By",
+      "all": "All Types"
+    },
+    "sort": {
+      "newest": "Newest First",
+      "priceAsc": "Price: Low to High",
+      "priceDesc": "Price: High to Low",
+      "nearest": "Nearest First"
+    },
+    "noResults": "No bikes found matching your criteria",
+    "viewMap": "View on Map",
+    "viewGrid": "Grid View",
+    "condition": {
+      "A": "Like New",
+      "B": "Excellent",
+      "C": "Good",
+      "D": "Fair",
+      "E": "Poor",
+      "F": "Project"
+    }
+  },
+  "rental": {
+    "title": "Rent a Bike",
+    "subtitle": "Daily, weekly, and monthly rentals",
+    "perDay": "/ day",
+    "perWeek": "/ week",
+    "perMonth": "/ month",
+    "deposit": "Deposit",
+    "book": "Book Now",
+    "available": "Available",
+    "unavailable": "Unavailable"
+  },
+  "repair": {
+    "title": "Bike Repair",
+    "subtitle": "Find skilled mechanics near you",
+    "bookService": "Book Service",
+    "mobile": "Mobile Mechanic",
+    "responseTime": "Response Time",
+    "services": "Services"
+  },
+  "auth": {
+    "login": "Log In",
+    "signup": "Create Account",
+    "email": "Email",
+    "password": "Password",
+    "name": "Full Name",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "orContinueWith": "Or continue with",
+    "terms": "By signing up, you agree to our Terms of Service and Privacy Policy"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "seeAll": "See All",
+    "readMore": "Read More",
+    "contact": "Contact",
+    "share": "Share",
+    "report": "Report",
+    "favorite": "Save to Favorites",
+    "unfavorite": "Remove from Favorites",
+    "EUR": "€",
+    "perDay": "per day",
+    "verified": "Verified",
+    "new": "New",
+    "featured": "Featured"
+  }
+}
