@@ -1,0 +1,149 @@
+{
+  "nav": {
+    "buy": "Acheter un vélo",
+    "sell": "Vendre un vélo",
+    "rent": "Louer un vélo",
+    "repair": "Réparation",
+    "map": "Vue carte",
+    "messages": "Messages",
+    "profile": "Profil",
+    "login": "Se connecter",
+    "signup": "S'inscrire",
+    "logout": "Se déconnecter"
+  },
+  "home": {
+    "hero": {
+      "title": "Trouvez votre vélo idéal sur la",
+      "titleHighlight": "Costa del Sol",
+      "subtitle": "La marketplace de vélos pour les cyclistes, touristes et expatriés. Achetez, vendez, louez ou faites réparer votre vélo.",
+      "ctaBuy": "Parcourir les vélos",
+      "ctaSell": "Vendre mon vélo",
+      "ctaRent": "Louer un vélo",
+      "stats": {
+        "listings": "Annonces actives",
+        "cities": "Villes",
+        "mechanics": "Mécaniciens",
+        "renters": "Locataires satisfaits"
+      }
+    },
+    "categories": {
+      "title": "Parcourir par catégorie",
+      "subtitle": "Trouvez exactement ce que vous cherchez"
+    },
+    "featured": {
+      "title": "Vélos en vedette",
+      "subtitle": "Annonces de qualité sélectionnées à la main",
+      "viewAll": "Voir tout"
+    },
+    "howItWorks": {
+      "title": "Comment ça marche",
+      "sell": {
+        "title": "Vendre votre vélo",
+        "steps": ["Prendre des photos", "Publier en quelques minutes", "Être payé en toute sécurité"]
+      },
+      "buy": {
+        "title": "Acheter un vélo",
+        "steps": ["Parcourir & filtrer", "Contacter le vendeur", "Se retrouver & rouler"]
+      },
+      "rent": {
+        "title": "Louer un vélo",
+        "steps": ["Choisir les dates", "Réserver en ligne", "Récupérer & rouler"]
+      }
+    },
+    "trust": {
+      "title": "Sûr & de confiance",
+      "verified": "Vendeurs vérifiés",
+      "reviews": "Avis honnêtes",
+      "secure": "Transactions sécurisées",
+      "support": "Support local"
+    }
+  },
+  "listings": {
+    "title": "Vélos à vendre",
+    "subtitle": "Trouvez votre vélo idéal sur la Costa del Sol",
+    "filters": {
+      "type": "Type de vélo",
+      "price": "Fourchette de prix",
+      "condition": "État",
+      "brand": "Marque",
+      "location": "Localisation",
+      "sortBy": "Trier par",
+      "all": "Tous les types"
+    },
+    "sort": {
+      "newest": "Plus récents en premier",
+      "priceAsc": "Prix : croissant",
+      "priceDesc": "Prix : décroissant",
+      "nearest": "Plus proches en premier"
+    },
+    "noResults": "Aucun vélo trouvé correspondant à vos critères",
+    "viewMap": "Voir sur la carte",
+    "viewGrid": "Vue grille",
+    "condition": {
+      "A": "Comme neuf",
+      "B": "Excellent",
+      "C": "Bon",
+      "D": "Correct",
+      "E": "Mauvais",
+      "F": "Projet"
+    }
+  },
+  "rental": {
+    "title": "Louer un vélo",
+    "subtitle": "Locations journalières, hebdomadaires et mensuelles",
+    "perDay": "/ jour",
+    "perWeek": "/ semaine",
+    "perMonth": "/ mois",
+    "deposit": "Caution",
+    "book": "Réserver maintenant",
+    "available": "Disponible",
+    "unavailable": "Indisponible"
+  },
+  "repair": {
+    "title": "Réparation de vélo",
+    "subtitle": "Trouvez des mécaniciens qualifiés près de chez vous",
+    "bookService": "Réserver un service",
+    "mobile": "Mécanicien mobile",
+    "responseTime": "Temps de réponse",
+    "services": "Services"
+  },
+  "auth": {
+    "login": "Se connecter",
+    "signup": "Créer un compte",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "name": "Nom complet",
+    "forgotPassword": "Mot de passe oublié ?",
+    "noAccount": "Pas encore de compte ?",
+    "hasAccount": "Vous avez déjà un compte ?",
+    "orContinueWith": "Ou continuer avec",
+    "terms": "En vous inscrivant, vous acceptez nos Conditions d'utilisation et notre Politique de confidentialité"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "submit": "Soumettre",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "clear": "Effacer",
+    "seeAll": "Voir tout",
+    "readMore": "Lire la suite",
+    "contact": "Contact",
+    "share": "Partager",
+    "report": "Signaler",
+    "favorite": "Ajouter aux favoris",
+    "unfavorite": "Retirer des favoris",
+    "EUR": "€",
+    "perDay": "par jour",
+    "verified": "Vérifié",
+    "new": "Nouveau",
+    "featured": "En vedette"
+  }
+}

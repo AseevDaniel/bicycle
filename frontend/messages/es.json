@@ -1,0 +1,149 @@
+{
+  "nav": {
+    "buy": "Comprar Bici",
+    "sell": "Vender Bici",
+    "rent": "Alquilar Bici",
+    "repair": "Reparación",
+    "map": "Vista Mapa",
+    "messages": "Mensajes",
+    "profile": "Perfil",
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "logout": "Cerrar Sesión"
+  },
+  "home": {
+    "hero": {
+      "title": "Encuentra tu Bici Perfecta en",
+      "titleHighlight": "Costa del Sol",
+      "subtitle": "El mercado de bicicletas líder para ciclistas, turistas y expatriados. Compra, vende, alquila o repara tu bici.",
+      "ctaBuy": "Ver Bicis",
+      "ctaSell": "Vender tu Bici",
+      "ctaRent": "Alquilar una Bici",
+      "stats": {
+        "listings": "Anuncios Activos",
+        "cities": "Ciudades",
+        "mechanics": "Mecánicos",
+        "renters": "Alquiladores Felices"
+      }
+    },
+    "categories": {
+      "title": "Buscar por Categoría",
+      "subtitle": "Encuentra exactamente lo que buscas"
+    },
+    "featured": {
+      "title": "Bicis Destacadas",
+      "subtitle": "Anuncios de calidad seleccionados a mano",
+      "viewAll": "Ver Todo"
+    },
+    "howItWorks": {
+      "title": "Cómo Funciona",
+      "sell": {
+        "title": "Vende tu Bici",
+        "steps": ["Haz fotos", "Publica en minutos", "Cobra de forma segura"]
+      },
+      "buy": {
+        "title": "Compra una Bici",
+        "steps": ["Navega y filtra", "Contacta al vendedor", "Queda y pedalea"]
+      },
+      "rent": {
+        "title": "Alquila una Bici",
+        "steps": ["Elige fechas", "Reserva online", "Recoge y pedalea"]
+      }
+    },
+    "trust": {
+      "title": "Seguro y de Confianza",
+      "verified": "Vendedores Verificados",
+      "reviews": "Opiniones Honestas",
+      "secure": "Transacciones Seguras",
+      "support": "Soporte Local"
+    }
+  },
+  "listings": {
+    "title": "Bicis en Venta",
+    "subtitle": "Encuentra tu montura perfecta en Costa del Sol",
+    "filters": {
+      "type": "Tipo de Bici",
+      "price": "Rango de Precio",
+      "condition": "Estado",
+      "brand": "Marca",
+      "location": "Ubicación",
+      "sortBy": "Ordenar Por",
+      "all": "Todos los Tipos"
+    },
+    "sort": {
+      "newest": "Más Recientes",
+      "priceAsc": "Precio: Menor a Mayor",
+      "priceDesc": "Precio: Mayor a Menor",
+      "nearest": "Más Cercanos"
+    },
+    "noResults": "No se encontraron bicis con tus criterios",
+    "viewMap": "Ver en Mapa",
+    "viewGrid": "Vista en Cuadrícula",
+    "condition": {
+      "A": "Como Nueva",
+      "B": "Excelente",
+      "C": "Bueno",
+      "D": "Aceptable",
+      "E": "Pobre",
+      "F": "Proyecto"
+    }
+  },
+  "rental": {
+    "title": "Alquiler de Bicis",
+    "subtitle": "Alquileres diarios, semanales y mensuales",
+    "perDay": "/ día",
+    "perWeek": "/ semana",
+    "perMonth": "/ mes",
+    "deposit": "Depósito",
+    "book": "Reservar",
+    "available": "Disponible",
+    "unavailable": "No Disponible"
+  },
+  "repair": {
+    "title": "Reparación de Bicis",
+    "subtitle": "Encuentra mecánicos cualificados cerca de ti",
+    "bookService": "Reservar Servicio",
+    "mobile": "Mecánico a Domicilio",
+    "responseTime": "Tiempo de Respuesta",
+    "services": "Servicios"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "signup": "Crear Cuenta",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "name": "Nombre Completo",
+    "forgotPassword": "¿Olvidaste la contraseña?",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "orContinueWith": "O continúa con",
+    "terms": "Al registrarte, aceptas nuestros Términos de Servicio y Política de Privacidad"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Algo salió mal",
+    "retry": "Intentar de Nuevo",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "clear": "Limpiar",
+    "seeAll": "Ver Todo",
+    "readMore": "Leer Más",
+    "contact": "Contactar",
+    "share": "Compartir",
+    "report": "Reportar",
+    "favorite": "Guardar en Favoritos",
+    "unfavorite": "Quitar de Favoritos",
+    "EUR": "€",
+    "perDay": "por día",
+    "verified": "Verificado",
+    "new": "Nuevo",
+    "featured": "Destacado"
+  }
+}
