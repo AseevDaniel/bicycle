@@ -9,4 +9,5 @@ dist/
 .turbo/
 .DS_Store
 coverage/
-bmx_bike/
+/bmx_bike/
+/btwin-triban-100-road-bike/
