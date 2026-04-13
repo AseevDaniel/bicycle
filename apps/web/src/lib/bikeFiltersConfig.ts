@@ -7,9 +7,9 @@ export interface BikeTypeConfig {
 
 export const BIKE_FILTER_CONFIG: Record<string, BikeTypeConfig> = {
   road: {
-    name: 'Road (Шоссе)',
+    name: 'Road Bike',
     allowedWheels: ['700c', '650c'],
-    allowedBrakes: ['Rim (Ободные)', 'Disc Mechanical', 'Disc Hydraulic'],
+    allowedBrakes: ['Rim Brakes', 'Disc Mechanical', 'Disc Hydraulic'],
     allowedGroupsets: {
       Shimano: ['Claris', 'Sora', 'Tiagra', '105', 'Ultegra', 'Dura-Ace', 'Di2'],
       SRAM: ['Apex', 'Rival', 'Force', 'Red', 'eTap AXS'],
@@ -17,16 +17,16 @@ export const BIKE_FILTER_CONFIG: Record<string, BikeTypeConfig> = {
     },
   },
   mountain: {
-    name: 'Mountain (MTB)',
+    name: 'Mountain Bike',
     allowedWheels: ['26"', '27.5"', '29"', 'Mullet (29/27.5)'],
-    allowedBrakes: ['Disc Hydraulic', 'Disc Mechanical', 'Rim (Ободные)'],
+    allowedBrakes: ['Disc Hydraulic', 'Disc Mechanical', 'Rim Brakes'],
     allowedGroupsets: {
       Shimano: ['Tourney', 'Altus', 'Acera', 'Alivio', 'Deore', 'SLX', 'XT', 'XTR'],
       SRAM: ['SX Eagle', 'NX Eagle', 'GX Eagle', 'X01 Eagle', 'XX1 Eagle', 'Transmission (T-Type)'],
     },
   },
   gravel: {
-    name: 'Gravel (Грэвел)',
+    name: 'Gravel',
     allowedWheels: ['700c', '650b'],
     allowedBrakes: ['Disc Hydraulic', 'Disc Mechanical'],
     allowedGroupsets: {
@@ -35,12 +35,49 @@ export const BIKE_FILTER_CONFIG: Record<string, BikeTypeConfig> = {
     },
   },
   city_hybrid: {
-    name: 'City / Hybrid (Городской)',
+    name: 'City / Hybrid',
     allowedWheels: ['700c', '26"', '28"'],
-    allowedBrakes: ['Rim (Ободные)', 'Disc Mechanical', 'Disc Hydraulic', 'Roller (Роллерные)'],
+    allowedBrakes: ['Rim Brakes', 'Disc Mechanical', 'Disc Hydraulic', 'Roller Brakes'],
     allowedGroupsets: {
-      Shimano: ['Tourney', 'Altus', 'Acera', 'Alivio', 'Nexus (Планетарная)', 'Alfine (Планетарная)'],
+      Shimano: ['Tourney', 'Altus', 'Acera', 'Alivio', 'Nexus (Internal Gear)', 'Alfine (Internal Gear)'],
       SRAM: ['X3', 'X4', 'X5'],
+    },
+  },
+  bmx: {
+    name: 'BMX',
+    allowedWheels: ['20"', '22"', '24"'],
+    allowedBrakes: ['U-Brakes', 'V-Brakes', 'Disc Mechanical', 'No Brakes (Brakeless)'],
+    allowedGroupsets: {
+      Drivetrain: ['Single Speed (Freecoaster)', 'Single Speed (Cassette)', 'Single Speed (Freewheel)'],
+      Style: ['Street', 'Park', 'Dirt / Jump', 'Flatland', 'Racing'],
+    },
+  },
+  kids: {
+    name: 'Kids Bike',
+    allowedWheels: ['12"', '14"', '16"', '18"', '20"', '24"'],
+    allowedBrakes: ['Coaster Brake', 'Rim Caliper', 'V-Brakes', 'Disc Mechanical'],
+    allowedGroupsets: {
+      Speeds: ['Single Speed', '3-Speed', '6-Speed', '7-Speed', '8-Speed'],
+      'Age Group': ['2–4 yrs (Balance)', '4–6 yrs', '6–9 yrs', '9–12 yrs'],
+    },
+  },
+  folding: {
+    name: 'Folding Bike',
+    allowedWheels: ['16"', '20"', '24"'],
+    allowedBrakes: ['Rim Caliper', 'V-Brakes', 'Disc Mechanical', 'Disc Hydraulic'],
+    allowedGroupsets: {
+      Shimano: ['Nexus 3', 'Nexus 7', 'Nexus 8', 'Alfine 8', 'Alfine 11', 'Tourney', 'Acera'],
+      SRAM: ['Automatix', 'i-Motion 3'],
+      Other: ['Single Speed', 'Derailleur 6-Speed', 'Derailleur 8-Speed'],
+    },
+  },
+  cargo: {
+    name: 'Cargo Bike',
+    allowedWheels: ['20"', '24"', '26"', '700c', '29"'],
+    allowedBrakes: ['Disc Hydraulic', 'Disc Mechanical', 'Drum Brake', 'V-Brakes'],
+    allowedGroupsets: {
+      'E-Assist': ['Bosch Cargo Line', 'Bosch Active Line', 'Shimano STEPS E6100', 'Yamaha PW-S2', 'Bafang M600'],
+      Mechanical: ['Single Speed', 'Shimano Nexus 7', 'Shimano Nexus 8', 'Shimano Alfine 8', 'SRAM Automatix'],
     },
   },
 }
@@ -52,6 +89,10 @@ export const BIKE_TYPE_CONFIG_MAP: Record<string, string> = {
   gravel: 'gravel',
   city: 'city_hybrid',
   hybrid: 'city_hybrid',
+  bmx: 'bmx',
+  kids: 'kids',
+  folding: 'folding',
+  cargo: 'cargo',
 }
 
 /**
