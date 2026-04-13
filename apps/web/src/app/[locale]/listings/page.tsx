@@ -80,7 +80,7 @@ const MOCK_LISTINGS: ListingCardData[] = [
     isNegotiable: true,
     isFeatured: false,
     wheelSize: '700c',
-    brakeType: 'Rim (Ободные)',
+    brakeType: 'Rim Brakes',
     groupset: 'Shimano Acera',
   },
   {
@@ -169,7 +169,7 @@ const MOCK_LISTINGS: ListingCardData[] = [
     isNegotiable: true,
     isFeatured: false,
     wheelSize: '700c',
-    brakeType: 'Rim (Ободные)',
+    brakeType: 'Rim Brakes',
     groupset: 'Shimano Tiagra',
   },
   {
@@ -235,7 +235,7 @@ const MOCK_LISTINGS: ListingCardData[] = [
     isNegotiable: false,
     isFeatured: true,
     wheelSize: '700c',
-    brakeType: 'Rim (Ободные)',
+    brakeType: 'Rim Brakes',
     groupset: 'Campagnolo Record',
   },
   {
@@ -301,7 +301,7 @@ const MOCK_LISTINGS: ListingCardData[] = [
     isNegotiable: true,
     isFeatured: false,
     wheelSize: '700c',
-    brakeType: 'Rim (Ободные)',
+    brakeType: 'Rim Brakes',
     groupset: 'Shimano Tourney',
   },
   {

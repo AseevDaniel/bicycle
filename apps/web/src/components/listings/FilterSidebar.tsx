@@ -240,7 +240,7 @@ export function FilterSidebar({ filters, onChange, onClose, isMobile }: FilterSi
         'bg-white dark:bg-secondary-800',
         isMobile
           ? 'h-full overflow-y-auto p-5'
-          : 'rounded-2xl border border-gray-100 dark:border-secondary-700 p-5 sticky top-24'
+          : 'rounded-2xl border border-gray-100 dark:border-secondary-700 p-5 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto'
       )}
     >
       {/* Header */}
@@ -288,7 +288,7 @@ export function FilterSidebar({ filters, onChange, onClose, isMobile }: FilterSi
 
       {!showDependentFilters && (
         <p className="text-[11px] text-gray-400 dark:text-white/30 mt-2 px-0.5">
-          Select Road, Mountain, Gravel, or City/Hybrid to see compatible components
+          Select a bike type to see compatible components
         </p>
       )}
 
