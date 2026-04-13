@@ -33,6 +33,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-12-15',
     isNegotiable: false,
     isFeatured: true,
+    wheelSize: '700c',
+    brakeType: 'Disc Hydraulic',
+    groupset: 'Shimano Ultegra',
   },
   {
     id: '2',
@@ -53,6 +56,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-12-20',
     isNegotiable: true,
     isFeatured: true,
+    wheelSize: '29"',
+    brakeType: 'Disc Hydraulic',
+    groupset: 'SRAM GX Eagle',
   },
   {
     id: '3',
@@ -73,6 +79,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-12-18',
     isNegotiable: true,
     isFeatured: false,
+    wheelSize: '700c',
+    brakeType: 'Rim (Ободные)',
+    groupset: 'Shimano Acera',
   },
   {
     id: '4',
@@ -93,6 +102,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-12-22',
     isNegotiable: false,
     isFeatured: true,
+    wheelSize: '700c',
+    brakeType: 'Disc Hydraulic',
+    groupset: 'Shimano 105',
   },
   {
     id: '5',
@@ -113,6 +125,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-12-10',
     isNegotiable: true,
     isFeatured: false,
+    wheelSize: '29"',
+    brakeType: 'Disc Mechanical',
+    groupset: 'Shimano Deore',
   },
   {
     id: '6',
@@ -153,6 +168,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-12-08',
     isNegotiable: true,
     isFeatured: false,
+    wheelSize: '700c',
+    brakeType: 'Rim (Ободные)',
+    groupset: 'Shimano Tiagra',
   },
   {
     id: '8',
@@ -193,6 +211,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-12-17',
     isNegotiable: true,
     isFeatured: false,
+    wheelSize: '27.5"',
+    brakeType: 'Disc Hydraulic',
+    groupset: 'Shimano XT',
   },
   {
     id: '10',
@@ -213,6 +234,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-12-24',
     isNegotiable: false,
     isFeatured: true,
+    wheelSize: '700c',
+    brakeType: 'Rim (Ободные)',
+    groupset: 'Campagnolo Record',
   },
   {
     id: '11',
@@ -233,6 +257,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-12-05',
     isNegotiable: true,
     isFeatured: false,
+    wheelSize: '700c',
+    brakeType: 'Disc Mechanical',
+    groupset: 'Shimano Altus',
   },
   {
     id: '12',
@@ -273,6 +300,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-11-28',
     isNegotiable: true,
     isFeatured: false,
+    wheelSize: '700c',
+    brakeType: 'Rim (Ободные)',
+    groupset: 'Shimano Tourney',
   },
   {
     id: '14',
@@ -293,6 +323,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-12-19',
     isNegotiable: false,
     isFeatured: false,
+    wheelSize: '700c',
+    brakeType: 'Disc Hydraulic',
+    groupset: 'Shimano Dura-Ace',
   },
   {
     id: '15',
@@ -313,6 +346,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-12-13',
     isNegotiable: true,
     isFeatured: false,
+    wheelSize: '700c',
+    brakeType: 'Disc Hydraulic',
+    groupset: 'Shimano GRX 600',
   },
   {
     id: '16',
@@ -353,6 +389,9 @@ const MOCK_LISTINGS: ListingCardData[] = [
     createdAt: '2024-12-02',
     isNegotiable: true,
     isFeatured: false,
+    wheelSize: '29"',
+    brakeType: 'Disc Hydraulic',
+    groupset: 'Shimano Deore',
   },
   {
     id: '18',
@@ -458,6 +497,9 @@ function ListingsPageInner() {
     priceMin: Number(searchParams.get('priceMin') ?? '0'),
     priceMax: Number(searchParams.get('priceMax') ?? '10000'),
     city: searchParams.get('city') ?? '',
+    wheels: searchParams.get('wheels')?.split(',').filter(Boolean) ?? [],
+    brakes: searchParams.get('brakes')?.split(',').filter(Boolean) ?? [],
+    groupsets: searchParams.get('groupsets')?.split(',').filter(Boolean) ?? [],
   }
 
   // Simulate loading
@@ -491,6 +533,9 @@ function ListingsPageInner() {
       priceMin: filters.priceMin > 0 ? String(filters.priceMin) : null,
       priceMax: filters.priceMax < 10000 ? String(filters.priceMax) : null,
       city: filters.city || null,
+      wheels: filters.wheels.join(',') || null,
+      brakes: filters.brakes.join(',') || null,
+      groupsets: filters.groupsets.join(',') || null,
     })
   }
 
@@ -551,6 +596,24 @@ function ListingsPageInner() {
     result = result.filter(
       (l) => l.price >= filtersFromUrl.priceMin && l.price <= filtersFromUrl.priceMax
     )
+
+    if (filtersFromUrl.wheels.length > 0) {
+      result = result.filter((l) =>
+        l.wheelSize ? filtersFromUrl.wheels.includes(l.wheelSize) : false
+      )
+    }
+    if (filtersFromUrl.brakes.length > 0) {
+      result = result.filter((l) =>
+        l.brakeType ? filtersFromUrl.brakes.includes(l.brakeType) : false
+      )
+    }
+    if (filtersFromUrl.groupsets.length > 0) {
+      result = result.filter((l) =>
+        l.groupset
+          ? filtersFromUrl.groupsets.some((g) => l.groupset!.includes(g))
+          : false
+      )
+    }
 
     switch (sortFromUrl) {
       case 'price_asc':
@@ -619,9 +682,9 @@ function ListingsPageInner() {
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 Filters
-                {(filtersFromUrl.bikeTypes.length + filtersFromUrl.conditions.length + filtersFromUrl.brands.length) > 0 && (
+                {(filtersFromUrl.bikeTypes.length + filtersFromUrl.conditions.length + filtersFromUrl.brands.length + filtersFromUrl.wheels.length + filtersFromUrl.brakes.length + filtersFromUrl.groupsets.length) > 0 && (
                   <span className="w-5 h-5 bg-primary text-white text-xs rounded-full flex items-center justify-center">
-                    {filtersFromUrl.bikeTypes.length + filtersFromUrl.conditions.length + filtersFromUrl.brands.length}
+                    {filtersFromUrl.bikeTypes.length + filtersFromUrl.conditions.length + filtersFromUrl.brands.length + filtersFromUrl.wheels.length + filtersFromUrl.brakes.length + filtersFromUrl.groupsets.length}
                   </span>
                 )}
               </button>

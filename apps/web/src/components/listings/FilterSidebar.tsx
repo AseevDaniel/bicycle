@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { X, ChevronDown, ChevronUp } from 'lucide-react'
+import { X, ChevronDown, ChevronUp, Sparkles } from 'lucide-react'
 import { clsx } from 'clsx'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   getAllowedWheels,
   getAllowedBrakes,
@@ -89,7 +90,20 @@ function FilterSection({ title, children, defaultOpen = true, badge }: FilterSec
           ? <ChevronUp className="w-4 h-4 text-gray-400 flex-shrink-0" />
           : <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0" />}
       </button>
-      {open && children}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="content"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+            style={{ overflow: 'hidden' }}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -272,72 +286,86 @@ export function FilterSidebar({ filters, onChange, onClose, isMobile }: FilterSi
         </div>
       </FilterSection>
 
+      {!showDependentFilters && (
+        <p className="text-[11px] text-gray-400 dark:text-white/30 mt-2 px-0.5">
+          Select Road, Mountain, Gravel, or City/Hybrid to see compatible components
+        </p>
+      )}
+
       {/* ---------------------------------------------------------------- */}
       {/* Dependent sections: Wheel Size, Brakes, Transmission             */}
       {/* Only visible when at least one configured bike type is selected.  */}
       {/* ---------------------------------------------------------------- */}
-      {showDependentFilters && (
-        <>
-          {/* Context info pill */}
-          <div className="mb-3 -mt-1">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-500/10 text-accent-500 text-[11px] font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent-500 inline-block flex-shrink-0" />
-              Showing filters for {configuredTypeNames.join(', ')}
-            </span>
-          </div>
-
-          {/* Wheel Size */}
-          <FilterSection title="Wheel Size" badge={filters.wheels.length}>
-            <div className="border-l-2 border-primary/40 pl-3 space-y-2">
-              {allowedWheels.map((wheel) => (
-                <CheckboxRow
-                  key={wheel}
-                  label={wheel}
-                  checked={filters.wheels.includes(wheel)}
-                  onChange={() => toggleWheel(wheel)}
-                />
-              ))}
+      <AnimatePresence>
+        {showDependentFilters && (
+          <motion.div
+            key="dependent-filters"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+          >
+            {/* Context info pill */}
+            <div className="mb-3 -mt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-500/10 text-accent-500 text-[11px] font-medium border border-accent-500/20">
+                <Sparkles className="w-3 h-3 flex-shrink-0" />
+                Showing filters for {configuredTypeNames.join(', ')}
+              </span>
             </div>
-          </FilterSection>
 
-          {/* Brakes */}
-          <FilterSection title="Brakes" badge={filters.brakes.length}>
-            <div className="border-l-2 border-primary/40 pl-3 space-y-2">
-              {allowedBrakes.map((brake) => (
-                <CheckboxRow
-                  key={brake}
-                  label={brake}
-                  checked={filters.brakes.includes(brake)}
-                  onChange={() => toggleBrake(brake)}
-                />
-              ))}
-            </div>
-          </FilterSection>
+            {/* Wheel Size */}
+            <FilterSection title="Wheel Size" badge={filters.wheels.length}>
+              <div className="border-l-2 border-primary/40 pl-3 space-y-2">
+                {allowedWheels.map((wheel) => (
+                  <CheckboxRow
+                    key={wheel}
+                    label={wheel}
+                    checked={filters.wheels.includes(wheel)}
+                    onChange={() => toggleWheel(wheel)}
+                  />
+                ))}
+              </div>
+            </FilterSection>
 
-          {/* Transmission */}
-          <FilterSection title="Transmission" badge={filters.groupsets.length}>
-            <div className="border-l-2 border-primary/40 pl-3 space-y-4">
-              {allowedGroupsets.map(({ brand, models }) => (
-                <div key={brand}>
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-white/30 mb-1.5">
-                    {brand}
-                  </p>
-                  <div className="space-y-1.5">
-                    {models.map((model) => (
-                      <CheckboxRow
-                        key={model}
-                        label={model}
-                        checked={filters.groupsets.includes(model)}
-                        onChange={() => toggleGroupset(model)}
-                      />
-                    ))}
+            {/* Brakes */}
+            <FilterSection title="Brakes" badge={filters.brakes.length}>
+              <div className="border-l-2 border-primary/40 pl-3 space-y-2">
+                {allowedBrakes.map((brake) => (
+                  <CheckboxRow
+                    key={brake}
+                    label={brake}
+                    checked={filters.brakes.includes(brake)}
+                    onChange={() => toggleBrake(brake)}
+                  />
+                ))}
+              </div>
+            </FilterSection>
+
+            {/* Transmission */}
+            <FilterSection title="Transmission" badge={filters.groupsets.length}>
+              <div className="border-l-2 border-primary/40 pl-3 space-y-4">
+                {allowedGroupsets.map(({ brand, models }) => (
+                  <div key={brand}>
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-white/30 mb-1.5">
+                      {brand}
+                    </p>
+                    <div className="space-y-1.5">
+                      {models.map((model) => (
+                        <CheckboxRow
+                          key={model}
+                          label={model}
+                          checked={filters.groupsets.includes(model)}
+                          onChange={() => toggleGroupset(model)}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </FilterSection>
-        </>
-      )}
+                ))}
+              </div>
+            </FilterSection>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ---------------------------------------------------------------- */}
       {/* Price Range                                                       */}
