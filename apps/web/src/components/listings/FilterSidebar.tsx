@@ -1,8 +1,21 @@
 'use client'
 
 import { useState } from 'react'
-import { X, ChevronDown, ChevronUp } from 'lucide-react'
+import { X, ChevronDown, ChevronUp, Sparkles } from 'lucide-react'
 import { clsx } from 'clsx'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  getAllowedWheels,
+  getAllowedBrakes,
+  getAllowedGroupsets,
+  hasDependentFilters,
+  BIKE_FILTER_CONFIG,
+  BIKE_TYPE_CONFIG_MAP,
+} from '@/lib/bikeFiltersConfig'
+
+// ---------------------------------------------------------------------------
+// Types & constants
+// ---------------------------------------------------------------------------
 
 export interface FilterState {
   bikeTypes: string[]
@@ -11,6 +24,9 @@ export interface FilterState {
   priceMin: number
   priceMax: number
   city: string
+  wheels: string[]
+  brakes: string[]
+  groupsets: string[]
 }
 
 export const INITIAL_FILTERS: FilterState = {
@@ -20,6 +36,9 @@ export const INITIAL_FILTERS: FilterState = {
   priceMin: 0,
   priceMax: 10000,
   city: '',
+  wheels: [],
+  brakes: [],
+  groupsets: [],
 }
 
 const BIKE_TYPES = [
@@ -40,13 +59,18 @@ const BRANDS = [
   'Santa Cruz', 'Pinarello', 'Colnago', 'BMC', 'Wilier',
 ]
 
+// ---------------------------------------------------------------------------
+// FilterSection
+// ---------------------------------------------------------------------------
+
 interface FilterSectionProps {
   title: string
   children: React.ReactNode
   defaultOpen?: boolean
+  badge?: number
 }
 
-function FilterSection({ title, children, defaultOpen = true }: FilterSectionProps) {
+function FilterSection({ title, children, defaultOpen = true, badge }: FilterSectionProps) {
   const [open, setOpen] = useState(defaultOpen)
   return (
     <div className="border-b border-gray-100 dark:border-secondary-700 pb-4 mb-4 last:border-0 last:mb-0 last:pb-0">
@@ -54,13 +78,91 @@ function FilterSection({ title, children, defaultOpen = true }: FilterSectionPro
         onClick={() => setOpen(!open)}
         className="flex items-center justify-between w-full mb-3 text-sm font-semibold text-gray-900 dark:text-white"
       >
-        {title}
-        {open ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+        <span className="flex items-center gap-2">
+          {title}
+          {badge != null && badge > 0 && (
+            <span className="inline-flex items-center justify-center h-4 min-w-[1rem] px-1 rounded-full bg-primary text-white text-[10px] font-bold leading-none">
+              {badge}
+            </span>
+          )}
+        </span>
+        {open
+          ? <ChevronUp className="w-4 h-4 text-gray-400 flex-shrink-0" />
+          : <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0" />}
       </button>
-      {open && children}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="content"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+            style={{ overflow: 'hidden' }}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
+
+// ---------------------------------------------------------------------------
+// Shared checkbox row
+// ---------------------------------------------------------------------------
+
+interface CheckboxRowProps {
+  label: string
+  checked: boolean
+  onChange: () => void
+  disabled?: boolean
+  suffix?: React.ReactNode
+}
+
+function CheckboxRow({ label, checked, onChange, disabled = false, suffix }: CheckboxRowProps) {
+  return (
+    <label
+      className={clsx(
+        'flex items-center gap-2.5 cursor-pointer group',
+        disabled && 'opacity-40 cursor-not-allowed pointer-events-none'
+      )}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        disabled={disabled}
+        className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary focus:ring-offset-0"
+      />
+      <span className="text-sm text-gray-700 dark:text-white/70 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+        {label}
+      </span>
+      {suffix && <span className="ml-auto">{suffix}</span>}
+    </label>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Helper: collect human-readable config names for selected bike types
+// ---------------------------------------------------------------------------
+
+function getConfiguredTypeNames(bikeTypes: string[]): string[] {
+  const seenKeys = new Set<string>()
+  const names: string[] = []
+  for (const type of bikeTypes) {
+    const key = BIKE_TYPE_CONFIG_MAP[type]
+    if (key && BIKE_FILTER_CONFIG[key] && !seenKeys.has(key)) {
+      seenKeys.add(key)
+      names.push(BIKE_FILTER_CONFIG[key].name)
+    }
+  }
+  return names
+}
+
+// ---------------------------------------------------------------------------
+// FilterSidebar
+// ---------------------------------------------------------------------------
 
 interface FilterSidebarProps {
   filters: FilterState
@@ -76,12 +178,22 @@ export function FilterSidebar({ filters, onChange, onClose, isMobile }: FilterSi
     filters.brands.length > 0 ||
     filters.city !== '' ||
     filters.priceMin > 0 ||
-    filters.priceMax < 10000
+    filters.priceMax < 10000 ||
+    filters.wheels.length > 0 ||
+    filters.brakes.length > 0 ||
+    filters.groupsets.length > 0
 
-  const toggleArrayFilter = (
-    key: 'bikeTypes' | 'conditions' | 'brands',
-    value: string
-  ) => {
+  // ---- Toggle handlers ---------------------------------------------------
+
+  /** Toggles a bike type and resets all dependent filters. */
+  const toggleBikeType = (type: string) => {
+    const updated = filters.bikeTypes.includes(type)
+      ? filters.bikeTypes.filter((v) => v !== type)
+      : [...filters.bikeTypes, type]
+    onChange({ ...filters, bikeTypes: updated, wheels: [], brakes: [], groupsets: [] })
+  }
+
+  const toggleArrayFilter = (key: 'conditions' | 'brands', value: string) => {
     const current = filters[key]
     const updated = current.includes(value)
       ? current.filter((v) => v !== value)
@@ -89,7 +201,38 @@ export function FilterSidebar({ filters, onChange, onClose, isMobile }: FilterSi
     onChange({ ...filters, [key]: updated })
   }
 
+  const toggleWheel = (value: string) => {
+    const updated = filters.wheels.includes(value)
+      ? filters.wheels.filter((v) => v !== value)
+      : [...filters.wheels, value]
+    onChange({ ...filters, wheels: updated })
+  }
+
+  const toggleBrake = (value: string) => {
+    const updated = filters.brakes.includes(value)
+      ? filters.brakes.filter((v) => v !== value)
+      : [...filters.brakes, value]
+    onChange({ ...filters, brakes: updated })
+  }
+
+  const toggleGroupset = (value: string) => {
+    const updated = filters.groupsets.includes(value)
+      ? filters.groupsets.filter((v) => v !== value)
+      : [...filters.groupsets, value]
+    onChange({ ...filters, groupsets: updated })
+  }
+
   const clearFilters = () => onChange(INITIAL_FILTERS)
+
+  // ---- Derived data for dependent filters --------------------------------
+
+  const showDependentFilters = hasDependentFilters(filters.bikeTypes)
+  const allowedWheels = getAllowedWheels(filters.bikeTypes)
+  const allowedBrakes = getAllowedBrakes(filters.bikeTypes)
+  const allowedGroupsets = getAllowedGroupsets(filters.bikeTypes)
+  const configuredTypeNames = getConfiguredTypeNames(filters.bikeTypes)
+
+  // ---- Render ------------------------------------------------------------
 
   return (
     <div
@@ -124,26 +267,109 @@ export function FilterSidebar({ filters, onChange, onClose, isMobile }: FilterSi
         </div>
       </div>
 
-      {/* Bike Type */}
+      {/* ---------------------------------------------------------------- */}
+      {/* Bike Type                                                         */}
+      {/* ---------------------------------------------------------------- */}
       <FilterSection title="Bike Type">
         <div className="space-y-2">
-          {BIKE_TYPES.map((type) => (
-            <label key={type} className="flex items-center gap-2.5 cursor-pointer group">
-              <input
-                type="checkbox"
-                checked={filters.bikeTypes.includes(type.toLowerCase())}
-                onChange={() => toggleArrayFilter('bikeTypes', type.toLowerCase())}
-                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary focus:ring-offset-0"
+          {BIKE_TYPES.map((type) => {
+            const value = type.toLowerCase()
+            return (
+              <CheckboxRow
+                key={type}
+                label={type}
+                checked={filters.bikeTypes.includes(value)}
+                onChange={() => toggleBikeType(value)}
               />
-              <span className="text-sm text-gray-700 dark:text-white/70 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-                {type}
-              </span>
-            </label>
-          ))}
+            )
+          })}
         </div>
       </FilterSection>
 
-      {/* Price Range */}
+      {!showDependentFilters && (
+        <p className="text-[11px] text-gray-400 dark:text-white/30 mt-2 px-0.5">
+          Select Road, Mountain, Gravel, or City/Hybrid to see compatible components
+        </p>
+      )}
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Dependent sections: Wheel Size, Brakes, Transmission             */}
+      {/* Only visible when at least one configured bike type is selected.  */}
+      {/* ---------------------------------------------------------------- */}
+      <AnimatePresence>
+        {showDependentFilters && (
+          <motion.div
+            key="dependent-filters"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+          >
+            {/* Context info pill */}
+            <div className="mb-3 -mt-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent-500/10 text-accent-500 text-[11px] font-medium border border-accent-500/20">
+                <Sparkles className="w-3 h-3 flex-shrink-0" />
+                Showing filters for {configuredTypeNames.join(', ')}
+              </span>
+            </div>
+
+            {/* Wheel Size */}
+            <FilterSection title="Wheel Size" badge={filters.wheels.length}>
+              <div className="border-l-2 border-primary/40 pl-3 space-y-2">
+                {allowedWheels.map((wheel) => (
+                  <CheckboxRow
+                    key={wheel}
+                    label={wheel}
+                    checked={filters.wheels.includes(wheel)}
+                    onChange={() => toggleWheel(wheel)}
+                  />
+                ))}
+              </div>
+            </FilterSection>
+
+            {/* Brakes */}
+            <FilterSection title="Brakes" badge={filters.brakes.length}>
+              <div className="border-l-2 border-primary/40 pl-3 space-y-2">
+                {allowedBrakes.map((brake) => (
+                  <CheckboxRow
+                    key={brake}
+                    label={brake}
+                    checked={filters.brakes.includes(brake)}
+                    onChange={() => toggleBrake(brake)}
+                  />
+                ))}
+              </div>
+            </FilterSection>
+
+            {/* Transmission */}
+            <FilterSection title="Transmission" badge={filters.groupsets.length}>
+              <div className="border-l-2 border-primary/40 pl-3 space-y-4">
+                {allowedGroupsets.map(({ brand, models }) => (
+                  <div key={brand}>
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-white/30 mb-1.5">
+                      {brand}
+                    </p>
+                    <div className="space-y-1.5">
+                      {models.map((model) => (
+                        <CheckboxRow
+                          key={model}
+                          label={model}
+                          checked={filters.groupsets.includes(model)}
+                          onChange={() => toggleGroupset(model)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </FilterSection>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Price Range                                                       */}
+      {/* ---------------------------------------------------------------- */}
       <FilterSection title="Price Range">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
@@ -192,48 +418,46 @@ export function FilterSidebar({ filters, onChange, onClose, isMobile }: FilterSi
         </div>
       </FilterSection>
 
-      {/* Condition */}
+      {/* ---------------------------------------------------------------- */}
+      {/* Condition                                                         */}
+      {/* ---------------------------------------------------------------- */}
       <FilterSection title="Condition">
         <div className="space-y-2">
           {CONDITIONS.map((cond) => (
-            <label key={cond.value} className="flex items-center gap-2.5 cursor-pointer group">
-              <input
-                type="checkbox"
-                checked={filters.conditions.includes(cond.value)}
-                onChange={() => toggleArrayFilter('conditions', cond.value)}
-                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary focus:ring-offset-0"
-              />
-              <span className="text-sm text-gray-700 dark:text-white/70 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-                {cond.label}
-              </span>
-              <span className="ml-auto text-xs font-bold text-gray-400 dark:text-white/30 border border-gray-200 dark:border-secondary-600 rounded px-1">
-                {cond.value}
-              </span>
-            </label>
+            <CheckboxRow
+              key={cond.value}
+              label={cond.label}
+              checked={filters.conditions.includes(cond.value)}
+              onChange={() => toggleArrayFilter('conditions', cond.value)}
+              suffix={
+                <span className="text-xs font-bold text-gray-400 dark:text-white/30 border border-gray-200 dark:border-secondary-600 rounded px-1">
+                  {cond.value}
+                </span>
+              }
+            />
           ))}
         </div>
       </FilterSection>
 
-      {/* Brand */}
+      {/* ---------------------------------------------------------------- */}
+      {/* Brand                                                             */}
+      {/* ---------------------------------------------------------------- */}
       <FilterSection title="Brand" defaultOpen={false}>
         <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
           {BRANDS.map((brand) => (
-            <label key={brand} className="flex items-center gap-2.5 cursor-pointer group">
-              <input
-                type="checkbox"
-                checked={filters.brands.includes(brand)}
-                onChange={() => toggleArrayFilter('brands', brand)}
-                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary focus:ring-offset-0"
-              />
-              <span className="text-sm text-gray-700 dark:text-white/70 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-                {brand}
-              </span>
-            </label>
+            <CheckboxRow
+              key={brand}
+              label={brand}
+              checked={filters.brands.includes(brand)}
+              onChange={() => toggleArrayFilter('brands', brand)}
+            />
           ))}
         </div>
       </FilterSection>
 
-      {/* Location */}
+      {/* ---------------------------------------------------------------- */}
+      {/* Location                                                          */}
+      {/* ---------------------------------------------------------------- */}
       <FilterSection title="Location" defaultOpen={false}>
         <input
           type="text"
@@ -244,7 +468,9 @@ export function FilterSidebar({ filters, onChange, onClose, isMobile }: FilterSi
         />
       </FilterSection>
 
-      {/* Clear filters button */}
+      {/* ---------------------------------------------------------------- */}
+      {/* Clear all (bottom CTA)                                            */}
+      {/* ---------------------------------------------------------------- */}
       {hasActiveFilters && (
         <button
           onClick={clearFilters}

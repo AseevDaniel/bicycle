@@ -26,6 +26,9 @@ export interface ListingCardData {
   createdAt: string
   isNegotiable: boolean
   isFeatured: boolean
+  wheelSize?: string    // e.g. "700c", '29"'
+  brakeType?: string    // e.g. "Disc Hydraulic"
+  groupset?: string     // e.g. "Shimano 105", "SRAM GX Eagle"
 }
 
 const conditionStyles: Record<string, string> = {
