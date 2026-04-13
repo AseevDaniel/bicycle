@@ -458,6 +458,9 @@ function ListingsPageInner() {
     priceMin: Number(searchParams.get('priceMin') ?? '0'),
     priceMax: Number(searchParams.get('priceMax') ?? '10000'),
     city: searchParams.get('city') ?? '',
+    wheels: searchParams.get('wheels')?.split(',').filter(Boolean) ?? [],
+    brakes: searchParams.get('brakes')?.split(',').filter(Boolean) ?? [],
+    groupsets: searchParams.get('groupsets')?.split(',').filter(Boolean) ?? [],
   }
 
   // Simulate loading
@@ -491,6 +494,9 @@ function ListingsPageInner() {
       priceMin: filters.priceMin > 0 ? String(filters.priceMin) : null,
       priceMax: filters.priceMax < 10000 ? String(filters.priceMax) : null,
       city: filters.city || null,
+      wheels: filters.wheels.join(',') || null,
+      brakes: filters.brakes.join(',') || null,
+      groupsets: filters.groupsets.join(',') || null,
     })
   }
 
@@ -619,9 +625,9 @@ function ListingsPageInner() {
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 Filters
-                {(filtersFromUrl.bikeTypes.length + filtersFromUrl.conditions.length + filtersFromUrl.brands.length) > 0 && (
+                {(filtersFromUrl.bikeTypes.length + filtersFromUrl.conditions.length + filtersFromUrl.brands.length + filtersFromUrl.wheels.length + filtersFromUrl.brakes.length + filtersFromUrl.groupsets.length) > 0 && (
                   <span className="w-5 h-5 bg-primary text-white text-xs rounded-full flex items-center justify-center">
-                    {filtersFromUrl.bikeTypes.length + filtersFromUrl.conditions.length + filtersFromUrl.brands.length}
+                    {filtersFromUrl.bikeTypes.length + filtersFromUrl.conditions.length + filtersFromUrl.brands.length + filtersFromUrl.wheels.length + filtersFromUrl.brakes.length + filtersFromUrl.groupsets.length}
                   </span>
                 )}
               </button>
@@ -674,7 +680,10 @@ function ListingsPageInner() {
               filtersFromUrl.brands.length > 0 ||
               filtersFromUrl.city ||
               filtersFromUrl.priceMin > 0 ||
-              filtersFromUrl.priceMax < 10000) && (
+              filtersFromUrl.priceMax < 10000 ||
+              filtersFromUrl.wheels.length > 0 ||
+              filtersFromUrl.brakes.length > 0 ||
+              filtersFromUrl.groupsets.length > 0) && (
               <div className="flex flex-wrap gap-2 mb-4">
                 {filtersFromUrl.bikeTypes.map((t) => (
                   <FilterChip
@@ -684,6 +693,42 @@ function ListingsPageInner() {
                       handleFilterChange({
                         ...filtersFromUrl,
                         bikeTypes: filtersFromUrl.bikeTypes.filter((x) => x !== t),
+                      })
+                    }
+                  />
+                ))}
+                {filtersFromUrl.wheels.map((w) => (
+                  <FilterChip
+                    key={w}
+                    label={w}
+                    onRemove={() =>
+                      handleFilterChange({
+                        ...filtersFromUrl,
+                        wheels: filtersFromUrl.wheels.filter((x) => x !== w),
+                      })
+                    }
+                  />
+                ))}
+                {filtersFromUrl.brakes.map((b) => (
+                  <FilterChip
+                    key={b}
+                    label={b}
+                    onRemove={() =>
+                      handleFilterChange({
+                        ...filtersFromUrl,
+                        brakes: filtersFromUrl.brakes.filter((x) => x !== b),
+                      })
+                    }
+                  />
+                ))}
+                {filtersFromUrl.groupsets.map((g) => (
+                  <FilterChip
+                    key={g}
+                    label={g}
+                    onRemove={() =>
+                      handleFilterChange({
+                        ...filtersFromUrl,
+                        groupsets: filtersFromUrl.groupsets.filter((x) => x !== g),
                       })
                     }
                   />
